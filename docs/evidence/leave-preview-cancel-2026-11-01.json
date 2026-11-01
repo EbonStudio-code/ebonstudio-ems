@@ -1,0 +1,105 @@
+{
+  "checkedAt": "2026-11-01T13:58:11.932Z",
+  "checks": [
+    {
+      "name": "Initial-form Cancel closes without previewing",
+      "passed": true
+    },
+    {
+      "name": "Preview shows the selected working date",
+      "passed": true
+    },
+    {
+      "name": "Cancel unmounts the preview dialog instead of showing a blank form",
+      "passed": true
+    },
+    {
+      "name": "Cancel focus return",
+      "note": "Programmatic observation only; native keyboard/focus-return acceptance is separate.",
+      "observed": false
+    },
+    {
+      "name": "Preview shows the selected working date",
+      "passed": true
+    },
+    {
+      "name": "Close button unmounts the preview dialog instead of showing a blank form",
+      "passed": true
+    },
+    {
+      "name": "Close button focus return",
+      "note": "Programmatic observation only; native keyboard/focus-return acceptance is separate.",
+      "observed": false
+    },
+    {
+      "name": "Preview shows the selected working date",
+      "passed": true
+    },
+    {
+      "name": "Dialog cancel event unmounts the preview dialog instead of showing a blank form",
+      "passed": true
+    },
+    {
+      "name": "Dialog cancel event focus return",
+      "note": "Programmatic observation only; native keyboard/focus-return acceptance is separate.",
+      "observed": false
+    },
+    {
+      "name": "Preview shows the selected working date",
+      "passed": true
+    },
+    {
+      "name": "Cancel unmounts the preview dialog instead of showing a blank form",
+      "passed": true
+    },
+    {
+      "name": "Cancel focus return",
+      "note": "Programmatic observation only; native keyboard/focus-return acceptance is separate.",
+      "observed": false
+    },
+    {
+      "name": "Explicit reopen starts a fresh request",
+      "passed": true
+    },
+    {
+      "name": "Four previews were exercised",
+      "passed": true
+    },
+    {
+      "name": "No cancellation submitted or changed a leave record",
+      "passed": true
+    }
+  ],
+  "focusNotes": "Four immediate programmatic focus-return observations were false before and after the fix. Not treated as passes. Native keyboard/focus-return acceptance remains unverified.",
+  "functionalFailures": 0,
+  "functionalPasses": 12,
+  "leaveRequests": [
+    {
+      "method": "GET",
+      "path": "/leave/requests"
+    },
+    {
+      "method": "GET",
+      "path": "/leave/requests"
+    },
+    {
+      "method": "POST",
+      "path": "/leave/preview"
+    },
+    {
+      "method": "POST",
+      "path": "/leave/preview"
+    },
+    {
+      "method": "POST",
+      "path": "/leave/preview"
+    },
+    {
+      "method": "POST",
+      "path": "/leave/preview"
+    }
+  ],
+  "origin": "http://127.0.0.1:5187",
+  "path": "/employee/leave",
+  "scope": "DB-free connected Leave UI; no real records or normal preview storage"
+}

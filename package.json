@@ -1,0 +1,26 @@
+{
+  "name": "employee-management",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/web",
+    "apps/api"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace @ems/web",
+    "build": "npm run build --workspace @ems/web",
+    "typecheck": "npm run typecheck --workspace @ems/web",
+    "test": "npm run test --workspace @ems/web",
+    "preview": "npm run preview --workspace @ems/web",
+    "dev:api": "npm run dev --workspace @ems/api",
+    "test:api": "npm run test --workspace @ems/api",
+    "test:api:integration": "npm run test:integration --workspace @ems/api",
+    "check:api": "npm run check --workspace @ems/api"
+  },
+  "engines": {
+    "node": "^22.12.0 || ^24.0.0 || >=26.0.0"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
+  }
+}

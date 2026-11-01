@@ -1,0 +1,28 @@
+[
+  {
+    "theme": "light",
+    "axeVersion": "4.12.1",
+    "url": "http://127.0.0.1:5186/login",
+    "counts": {
+      "inapplicable": 58,
+      "incomplete": 0,
+      "passes": 31,
+      "violations": 0
+    },
+    "violations": [],
+    "incomplete": []
+  },
+  {
+    "theme": "dark",
+    "axeVersion": "4.12.1",
+    "url": "http://127.0.0.1:5186/login",
+    "counts": {
+      "inapplicable": 58,
+      "incomplete": 0,
+      "passes": 31,
+      "violations": 0
+    },
+    "violations": [],
+    "incomplete": []
+  }
+]

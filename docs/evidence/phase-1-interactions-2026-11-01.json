@@ -1,0 +1,329 @@
+{
+  "preview": [
+    {
+      "page": "ceo",
+      "theme": "dark",
+      "width": 390,
+      "height": 844,
+      "scenario": "ready",
+      "preview": true,
+      "issues": [],
+      "contrastPairs": [
+        {
+          "foreground": "rgb(30, 30, 34)",
+          "background": "rgb(245, 243, 239)",
+          "ratio": 14.99
+        },
+        {
+          "foreground": "rgb(180, 177, 188)",
+          "background": "rgb(14, 14, 16)",
+          "ratio": 9.14
+        },
+        {
+          "foreground": "rgb(213, 211, 217)",
+          "background": "rgb(37, 37, 42)",
+          "ratio": 10.28
+        },
+        {
+          "foreground": "rgb(245, 243, 239)",
+          "background": "rgb(37, 37, 42)",
+          "ratio": 13.76
+        },
+        {
+          "foreground": "rgb(245, 243, 239)",
+          "background": "rgb(14, 14, 16)",
+          "ratio": 17.4
+        },
+        {
+          "foreground": "rgb(213, 211, 217)",
+          "background": "rgb(14, 14, 16)",
+          "ratio": 12.99
+        },
+        {
+          "foreground": "rgb(25, 22, 14)",
+          "background": "rgb(201, 162, 39)",
+          "ratio": 7.47
+        },
+        {
+          "foreground": "rgb(213, 211, 217)",
+          "background": "rgb(30, 30, 34)",
+          "ratio": 11.19
+        },
+        {
+          "foreground": "rgb(245, 243, 239)",
+          "background": "rgb(30, 30, 34)",
+          "ratio": 14.99
+        },
+        {
+          "foreground": "rgb(180, 177, 188)",
+          "background": "rgb(30, 30, 34)",
+          "ratio": 7.88
+        },
+        {
+          "foreground": "rgb(213, 211, 217)",
+          "background": "rgb(48, 48, 55)",
+          "ratio": 8.82
+        },
+        {
+          "foreground": "rgb(184, 206, 245)",
+          "background": "rgb(36, 45, 64)",
+          "ratio": 8.65
+        },
+        {
+          "foreground": "rgb(167, 215, 180)",
+          "background": "rgb(32, 53, 41)",
+          "ratio": 8.13
+        },
+        {
+          "foreground": "rgb(237, 204, 120)",
+          "background": "rgb(53, 43, 23)",
+          "ratio": 8.95
+        }
+      ],
+      "pageOverflow": false,
+      "minTextPx": 13,
+      "statFont": "\"Plus Jakarta Sans\", \"Segoe UI\", Arial, sans-serif",
+      "statNumerals": "proportional-nums",
+      "dateCopies": 1,
+      "tableOverflow": true,
+      "themeLabel": "Switch to light theme",
+      "removedFiller": true
+    },
+    {
+      "page": "employee",
+      "theme": "dark",
+      "width": 390,
+      "height": 844,
+      "scenario": "ready",
+      "preview": true,
+      "issues": [],
+      "contrastPairs": [
+        {
+          "foreground": "rgb(30, 30, 34)",
+          "background": "rgb(245, 243, 239)",
+          "ratio": 14.99
+        },
+        {
+          "foreground": "rgb(180, 177, 188)",
+          "background": "rgb(14, 14, 16)",
+          "ratio": 9.14
+        },
+        {
+          "foreground": "rgb(213, 211, 217)",
+          "background": "rgb(37, 37, 42)",
+          "ratio": 10.28
+        },
+        {
+          "foreground": "rgb(245, 243, 239)",
+          "background": "rgb(37, 37, 42)",
+          "ratio": 13.76
+        },
+        {
+          "foreground": "rgb(245, 243, 239)",
+          "background": "rgb(14, 14, 16)",
+          "ratio": 17.4
+        },
+        {
+          "foreground": "rgb(213, 211, 217)",
+          "background": "rgb(14, 14, 16)",
+          "ratio": 12.99
+        },
+        {
+          "foreground": "rgb(180, 177, 188)",
+          "background": "rgb(30, 30, 34)",
+          "ratio": 7.88
+        },
+        {
+          "foreground": "rgb(245, 243, 239)",
+          "background": "rgb(30, 30, 34)",
+          "ratio": 14.99
+        },
+        {
+          "foreground": "rgb(213, 211, 217)",
+          "background": "rgb(30, 30, 34)",
+          "ratio": 11.19
+        },
+        {
+          "foreground": "rgb(25, 22, 14)",
+          "background": "rgb(201, 162, 39)",
+          "ratio": 7.47
+        },
+        {
+          "foreground": "rgb(213, 211, 217)",
+          "background": "rgb(48, 48, 55)",
+          "ratio": 8.82
+        }
+      ],
+      "pageOverflow": false,
+      "minTextPx": 13,
+      "statFont": null,
+      "statNumerals": null,
+      "dateCopies": 1,
+      "tableOverflow": true,
+      "themeLabel": "Switch to light theme",
+      "removedFiller": true
+    }
+  ],
+  "clockIn": {
+    "toast": "Present — attendance recorded. Your actual clock-in time is saved.",
+    "role": "status",
+    "issues": [],
+    "contrastPairs": [
+      {
+        "foreground": "rgb(30, 30, 34)",
+        "background": "rgb(245, 243, 239)",
+        "ratio": 14.99
+      },
+      {
+        "foreground": "rgb(180, 177, 188)",
+        "background": "rgb(14, 14, 16)",
+        "ratio": 9.14
+      },
+      {
+        "foreground": "rgb(143, 139, 131)",
+        "background": "rgb(14, 14, 16)",
+        "ratio": 5.68
+      },
+      {
+        "foreground": "rgb(189, 185, 177)",
+        "background": "rgb(14, 14, 16)",
+        "ratio": 9.86
+      },
+      {
+        "foreground": "rgb(232, 196, 90)",
+        "background": "rgb(43, 38, 25)",
+        "ratio": 8.95
+      },
+      {
+        "foreground": "rgb(245, 243, 239)",
+        "background": "rgb(14, 14, 16)",
+        "ratio": 17.4
+      },
+      {
+        "foreground": "rgb(213, 211, 217)",
+        "background": "rgb(14, 14, 16)",
+        "ratio": 12.99
+      },
+      {
+        "foreground": "rgb(180, 177, 188)",
+        "background": "rgb(30, 30, 34)",
+        "ratio": 7.88
+      },
+      {
+        "foreground": "rgb(245, 243, 239)",
+        "background": "rgb(30, 30, 34)",
+        "ratio": 14.99
+      },
+      {
+        "foreground": "rgb(213, 211, 217)",
+        "background": "rgb(30, 30, 34)",
+        "ratio": 11.19
+      },
+      {
+        "foreground": "rgb(25, 22, 14)",
+        "background": "rgb(201, 162, 39)",
+        "ratio": 7.47
+      },
+      {
+        "foreground": "rgb(167, 215, 180)",
+        "background": "rgb(32, 53, 41)",
+        "ratio": 8.13
+      }
+    ],
+    "pageOverflow": false,
+    "minTextPx": 13,
+    "statFont": null,
+    "statNumerals": null,
+    "dateCopies": 1,
+    "tableOverflow": false,
+    "themeLabel": "Switch to light theme",
+    "removedFiller": true
+  },
+  "clockOut": {
+    "toast": "Clock-out saved. Your attendance record is retained.",
+    "role": "status",
+    "issues": [],
+    "contrastPairs": [
+      {
+        "foreground": "rgb(30, 30, 34)",
+        "background": "rgb(245, 243, 239)",
+        "ratio": 14.99
+      },
+      {
+        "foreground": "rgb(180, 177, 188)",
+        "background": "rgb(14, 14, 16)",
+        "ratio": 9.14
+      },
+      {
+        "foreground": "rgb(143, 139, 131)",
+        "background": "rgb(14, 14, 16)",
+        "ratio": 5.68
+      },
+      {
+        "foreground": "rgb(189, 185, 177)",
+        "background": "rgb(14, 14, 16)",
+        "ratio": 9.86
+      },
+      {
+        "foreground": "rgb(232, 196, 90)",
+        "background": "rgb(43, 38, 25)",
+        "ratio": 8.95
+      },
+      {
+        "foreground": "rgb(245, 243, 239)",
+        "background": "rgb(14, 14, 16)",
+        "ratio": 17.4
+      },
+      {
+        "foreground": "rgb(213, 211, 217)",
+        "background": "rgb(14, 14, 16)",
+        "ratio": 12.99
+      },
+      {
+        "foreground": "rgb(180, 177, 188)",
+        "background": "rgb(30, 30, 34)",
+        "ratio": 7.88
+      },
+      {
+        "foreground": "rgb(245, 243, 239)",
+        "background": "rgb(30, 30, 34)",
+        "ratio": 14.99
+      },
+      {
+        "foreground": "rgb(213, 211, 217)",
+        "background": "rgb(30, 30, 34)",
+        "ratio": 11.19
+      },
+      {
+        "foreground": "rgb(180, 177, 188)",
+        "background": "rgb(37, 37, 42)",
+        "ratio": 7.23
+      },
+      {
+        "foreground": "rgb(213, 211, 217)",
+        "background": "rgb(37, 37, 42)",
+        "ratio": 10.28
+      },
+      {
+        "foreground": "rgb(213, 211, 217)",
+        "background": "rgb(48, 48, 55)",
+        "ratio": 8.82
+      },
+      {
+        "foreground": "rgb(167, 215, 180)",
+        "background": "rgb(32, 53, 41)",
+        "ratio": 8.13
+      }
+    ],
+    "pageOverflow": false,
+    "minTextPx": 13,
+    "statFont": null,
+    "statNumerals": null,
+    "dateCopies": 1,
+    "tableOverflow": false,
+    "themeLabel": "Switch to light theme",
+    "removedFiller": true
+  },
+  "status": "Present",
+  "completed": true
+}

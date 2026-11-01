@@ -1,0 +1,245 @@
+{
+  "reducedMotion": {
+    "prefersReducedMotion": true,
+    "paused": true,
+    "runningAnimations": 0,
+    "controlDisabled": true
+  },
+  "audits": [
+    {
+      "concept": "gold",
+      "axeVersion": "4.12.1",
+      "counts": {
+        "inapplicable": 46,
+        "incomplete": 1,
+        "passes": 43,
+        "violations": 0
+      },
+      "violations": [],
+      "incomplete": [
+        {
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=axeAPI",
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodeCount": 9,
+          "nodes": [
+            {
+              "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+              "html": "<span>Crew online</span>",
+              "target": [
+                ".metric[data-reveal=\"\"]:nth-child(1) > .metric-heading > span"
+              ]
+            },
+            {
+              "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+              "html": "<strong>03</strong>",
+              "target": [
+                ".metric[data-reveal=\"\"]:nth-child(1) > p > strong"
+              ]
+            },
+            {
+              "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+              "html": "<span>/ 04</span>",
+              "target": [
+                ".metric[data-reveal=\"\"]:nth-child(1) > p > span"
+              ]
+            },
+            {
+              "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+              "html": "<span>In motion</span>",
+              "target": [
+                ".metric[data-reveal=\"\"]:nth-child(2) > .metric-heading > span"
+              ]
+            },
+            {
+              "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+              "html": "<strong id=\"open-task-count\">03</strong>",
+              "target": [
+                "#open-task-count"
+              ]
+            },
+            {
+              "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+              "html": "<span>tasks</span>",
+              "target": [
+                ".metric[data-reveal=\"\"]:nth-child(2) > p > span"
+              ]
+            },
+            {
+              "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+              "html": "<span>Your workday</span>",
+              "target": [
+                ".metric[data-reveal=\"\"]:nth-child(3) > .metric-heading > span"
+              ]
+            },
+            {
+              "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+              "html": "<strong class=\"workday-value\" id=\"workday-value\">Ready</strong>",
+              "target": [
+                "#workday-value"
+              ]
+            },
+            {
+              "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it partially overlaps other elements",
+              "html": "<p>Original design exploration, not a Figma import. No API calls, no saved changes, no real attendance.</p>",
+              "target": [
+                ".lab-footer > p:nth-child(1)"
+              ]
+            }
+          ],
+          "tags": [
+            "cat.color",
+            "wcag2aa",
+            "wcag143",
+            "TTv5",
+            "TT13.c",
+            "EN-301-549",
+            "EN-9.1.4.3",
+            "ACT",
+            "RGAAv4",
+            "RGAA-3.2.1"
+          ]
+        }
+      ]
+    },
+    {
+      "concept": "aurora",
+      "axeVersion": "4.12.1",
+      "counts": {
+        "inapplicable": 46,
+        "incomplete": 1,
+        "passes": 43,
+        "violations": 0
+      },
+      "violations": [],
+      "incomplete": [
+        {
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=axeAPI",
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodeCount": 1,
+          "nodes": [
+            {
+              "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+              "html": "<em>Own your orbit.</em>",
+              "target": [
+                "em"
+              ]
+            }
+          ],
+          "tags": [
+            "cat.color",
+            "wcag2aa",
+            "wcag143",
+            "TTv5",
+            "TT13.c",
+            "EN-301-549",
+            "EN-9.1.4.3",
+            "ACT",
+            "RGAAv4",
+            "RGAA-3.2.1"
+          ]
+        }
+      ]
+    },
+    {
+      "concept": "neon",
+      "axeVersion": "4.12.1",
+      "counts": {
+        "inapplicable": 45,
+        "incomplete": 1,
+        "passes": 44,
+        "violations": 0
+      },
+      "violations": [],
+      "incomplete": [
+        {
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=axeAPI",
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodeCount": 9,
+          "nodes": [
+            {
+              "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+              "html": "<span>Crew online</span>",
+              "target": [
+                ".metric[data-reveal=\"\"]:nth-child(1) > .metric-heading > span"
+              ]
+            },
+            {
+              "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+              "html": "<strong>03</strong>",
+              "target": [
+                ".metric[data-reveal=\"\"]:nth-child(1) > p > strong"
+              ]
+            },
+            {
+              "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+              "html": "<span>/ 04</span>",
+              "target": [
+                ".metric[data-reveal=\"\"]:nth-child(1) > p > span"
+              ]
+            },
+            {
+              "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+              "html": "<span>In motion</span>",
+              "target": [
+                ".metric[data-reveal=\"\"]:nth-child(2) > .metric-heading > span"
+              ]
+            },
+            {
+              "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+              "html": "<strong id=\"open-task-count\">03</strong>",
+              "target": [
+                "#open-task-count"
+              ]
+            },
+            {
+              "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+              "html": "<span>tasks</span>",
+              "target": [
+                ".metric[data-reveal=\"\"]:nth-child(2) > p > span"
+              ]
+            },
+            {
+              "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+              "html": "<span>Your workday</span>",
+              "target": [
+                ".metric[data-reveal=\"\"]:nth-child(3) > .metric-heading > span"
+              ]
+            },
+            {
+              "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+              "html": "<strong class=\"workday-value\" id=\"workday-value\">Ready</strong>",
+              "target": [
+                "#workday-value"
+              ]
+            },
+            {
+              "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it partially overlaps other elements",
+              "html": "<p>Original design exploration, not a Figma import. No API calls, no saved changes, no real attendance.</p>",
+              "target": [
+                ".lab-footer > p:nth-child(1)"
+              ]
+            }
+          ],
+          "tags": [
+            "cat.color",
+            "wcag2aa",
+            "wcag143",
+            "TTv5",
+            "TT13.c",
+            "EN-301-549",
+            "EN-9.1.4.3",
+            "ACT",
+            "RGAAv4",
+            "RGAA-3.2.1"
+          ]
+        }
+      ]
+    }
+  ]
+}

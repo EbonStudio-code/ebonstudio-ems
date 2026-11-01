@@ -1,0 +1,53 @@
+{
+  "note": "CSS viewports verified separately at 1440x900 and 390x844; PNGs retain the embedded browser's native device pixel density. Colour sampling only checks that files are not blank; it is not visual acceptance.",
+  "images": [
+    {
+      "File": "phase-1-ceo-dark-desktop.png",
+      "Width": 2518,
+      "Height": 1573,
+      "SampledColors": 47
+    },
+    {
+      "File": "phase-1-ceo-light-desktop.png",
+      "Width": 2518,
+      "Height": 1573,
+      "SampledColors": 49
+    },
+    {
+      "File": "phase-1-employee-dark-desktop.png",
+      "Width": 2518,
+      "Height": 1573,
+      "SampledColors": 88
+    },
+    {
+      "File": "phase-1-employee-light-desktop.png",
+      "Width": 2518,
+      "Height": 1573,
+      "SampledColors": 92
+    },
+    {
+      "File": "phase-1-ceo-dark-mobile.png",
+      "Width": 681,
+      "Height": 1475,
+      "SampledColors": 29
+    },
+    {
+      "File": "phase-1-ceo-light-mobile.png",
+      "Width": 681,
+      "Height": 1475,
+      "SampledColors": 31
+    },
+    {
+      "File": "phase-1-employee-dark-mobile.png",
+      "Width": 681,
+      "Height": 1475,
+      "SampledColors": 43
+    },
+    {
+      "File": "phase-1-employee-light-mobile.png",
+      "Width": 681,
+      "Height": 1475,
+      "SampledColors": 42
+    }
+  ]
+}
