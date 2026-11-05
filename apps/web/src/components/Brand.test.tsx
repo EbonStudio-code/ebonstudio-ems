@@ -23,8 +23,8 @@ describe('Ebon Studio identity', () => {
   });
   it('presents descriptive feature cards without pretending to show live records', () => {
     const html = renderToStaticMarkup(<MemoryRouter><AuthStory /></MemoryRouter>);
-    expect(html).toContain('Good people.');
-    expect(html).toContain('Great things.');
+    expect(html).toContain('Good People.');
+    expect(html).toContain('Great Things.');
     expect(html).toContain('01 / PEOPLE');
     expect(html).toContain('02 / TIME');
     expect(html).toContain('03 / WORK');

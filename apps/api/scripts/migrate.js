@@ -1,7 +1,8 @@
 import { readFile, readdir } from 'node:fs/promises';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { join } from 'node:path';
-import { createHash, randomUUID } from 'node:crypto';
+import { randomUUID } from 'node:crypto';
+import { migrationChecksums } from '../src/core/migration-checksum.js';
 import pg from 'pg';
 
 const directory = fileURLToPath(new URL('../migrations/', import.meta.url));
@@ -36,7 +37,7 @@ export async function migrate(pool, { baseline = false } = {}) {
       await db.query(body(source).replaceAll('public.users', `${reference}.users`));
       if (await shape(db, 'public') !== await shape(db, reference)) throw new Error('Existing users schema differs from 001. Manual review required.');
       await db.query(`DROP SCHEMA ${reference} CASCADE`);
-      const checksum = createHash('sha256').update(source).digest('hex');
+      const [checksum] = migrationChecksums(source);
       await db.query('INSERT INTO schema_migrations(name,sha256) VALUES($1,$2)', [files[0], checksum]);
       tracked.push({ name: files[0], sha256: checksum });
       applied.push('Baselined ' + files[0]);
@@ -44,10 +45,11 @@ export async function migrate(pool, { baseline = false } = {}) {
     await db.query('COMMIT');
     for (const file of files) {
       const source = await readFile(join(directory, file), 'utf8');
-      const checksum = createHash('sha256').update(source).digest('hex');
+      const checksums = migrationChecksums(source);
+      const [checksum] = checksums;
       const existing = tracked.find(row => row.name === file);
       if (existing) {
-        if (existing.sha256 !== checksum) throw new Error('Applied migration checksum mismatch: ' + file);
+        if (!checksums.includes(existing.sha256)) throw new Error('Applied migration checksum mismatch: ' + file);
         continue;
       }
       await db.query('BEGIN');

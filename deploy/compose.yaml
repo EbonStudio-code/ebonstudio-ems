@@ -1,0 +1,160 @@
+name: ems-prod
+
+x-logging: &logging
+  driver: json-file
+  options: { max-size: "10m", max-file: "3" }
+
+x-api: &api
+  labels: { com.ebonstudio.ems: "true" }
+  image: ${EMS_API_IMAGE:?Set immutable EMS_API_IMAGE}
+  init: true
+  read_only: true
+  user: "1000:1000"
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  tmpfs: ["/tmp:size=32m,mode=1777,noexec,nosuid"]
+  env_file: ["${EMS_RUNTIME_DIR:?Set absolute EMS_RUNTIME_DIR}/api.env"]
+  environment:
+    NODE_ENV: production
+    HOST: 0.0.0.0
+    PORT: "3000"
+    APP_ORIGIN: https://ems.ebonstudio.com
+    TRUST_PROXY_HOPS: "1"
+    PGHOST: db
+    PGPORT: "5432"
+    PGDATABASE: ems
+    PGUSER: ems_app
+    PGPASSWORD_FILE: /run/secrets/db_app_password
+    PGSSLMODE: disable
+    RATE_LIMIT_SECRET_FILE: /run/secrets/rate_limit_secret
+    READINESS_SECRET_FILE: /run/secrets/readiness_secret
+    RESEND_API_KEY_FILE: /run/secrets/resend_api_key
+    MAIL_OUTBOX_KEY_FILE: /run/secrets/mail_outbox_key
+    PDF_FONT_PATH: /opt/ems-fonts/DejaVuSans.ttf
+  secrets: [db_app_password, rate_limit_secret, readiness_secret, resend_api_key, mail_outbox_key]
+  logging: *logging
+  pids_limit: 128
+  stop_grace_period: 45s
+
+services:
+  db:
+    labels: { com.ebonstudio.ems: "true" }
+    image: ${EMS_DB_IMAGE:?Set immutable EMS_DB_IMAGE}
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ems_admin
+      POSTGRES_DB: ems
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_admin_password
+      POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256 --auth-local=scram-sha-256
+      PGDATA: /var/lib/postgresql/18/docker
+    command: ["postgres", "-c", "max_connections=80", "-c", "shared_buffers=256MB", "-c", "log_statement=none", "-c", "log_min_error_statement=panic"]
+    volumes: [pgdata:/var/lib/postgresql]
+    secrets: [db_admin_password, db_owner_password, db_app_password]
+    networks: [database]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ems_admin -d ems"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    shm_size: 256mb
+    mem_limit: 2g
+    cpus: 1.5
+    pids_limit: 128
+    security_opt: [no-new-privileges:true]
+    logging: *logging
+    stop_grace_period: 60s
+
+  migrate:
+    labels: { com.ebonstudio.ems: "true" }
+    image: ${EMS_API_IMAGE:?Set immutable EMS_API_IMAGE}
+    profiles: [ops]
+    user: "1000:1000"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    environment:
+      PGHOST: db
+      PGPORT: "5432"
+      PGDATABASE: ems
+      PGUSER: ems_owner
+      PGPASSWORD_FILE: /run/secrets/db_owner_password
+      PGSSLMODE: disable
+    secrets: [db_owner_password]
+    networks: [database]
+    command: ["scripts/deploy-migrate.js"]
+    depends_on:
+      db: { condition: service_healthy }
+    mem_limit: 512m
+    cpus: 0.5
+    pids_limit: 64
+    logging: *logging
+
+  api:
+    <<: *api
+    restart: unless-stopped
+    networks: [application, database]
+    depends_on:
+      db: { condition: service_healthy }
+    mem_limit: 768m
+    cpus: 1.0
+    healthcheck:
+      test: ["CMD", "ems-entrypoint", "scripts/healthcheck.js"]
+      interval: 15s
+      timeout: 8s
+      retries: 5
+      start_period: 20s
+
+  mail-worker:
+    <<: *api
+    restart: unless-stopped
+    command: ["scripts/mail-worker.js"]
+    networks: [database, mail-egress]
+    depends_on:
+      api: { condition: service_healthy }
+    mem_limit: 256m
+    cpus: 0.5
+    healthcheck:
+      test: ["CMD", "ems-entrypoint", "scripts/healthcheck.js", "--worker"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  web:
+    labels: { com.ebonstudio.ems: "true" }
+    image: ${EMS_WEB_IMAGE:?Set immutable EMS_WEB_IMAGE}
+    restart: unless-stopped
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    tmpfs: ["/tmp:size=32m,mode=1777,noexec,nosuid"]
+    networks: [application, ingress]
+    depends_on:
+      api: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/healthz"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    mem_limit: 128m
+    cpus: 0.5
+    pids_limit: 64
+    logging: *logging
+
+volumes:
+  pgdata:
+    labels: { com.ebonstudio.ems: "true" }
+networks:
+  database: { internal: true, labels: { com.ebonstudio.ems: "true" } }
+  application: { internal: true, labels: { com.ebonstudio.ems: "true" } }
+  ingress: { labels: { com.ebonstudio.ems: "true" } }
+  mail-egress: { labels: { com.ebonstudio.ems: "true" } }
+secrets:
+  db_admin_password: { file: "${EMS_RUNTIME_DIR}/secrets/db_admin_password" }
+  db_owner_password: { file: "${EMS_RUNTIME_DIR}/secrets/db_owner_password" }
+  db_app_password: { file: "${EMS_RUNTIME_DIR}/secrets/db_app_password" }
+  rate_limit_secret: { file: "${EMS_RUNTIME_DIR}/secrets/rate_limit_secret" }
+  readiness_secret: { file: "${EMS_RUNTIME_DIR}/secrets/readiness_secret" }
+  resend_api_key: { file: "${EMS_RUNTIME_DIR}/secrets/resend_api_key" }
+  mail_outbox_key: { file: "${EMS_RUNTIME_DIR}/secrets/mail_outbox_key" }

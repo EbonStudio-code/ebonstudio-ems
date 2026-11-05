@@ -1,0 +1,59 @@
+name: EMS production checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ems-ci-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 24
+          cache: npm
+      - name: Scan repository and all Git history before dependency installation
+        run: |
+          docker run --rm --network none -v "$PWD:/repo:ro" zricethezav/gitleaks@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f git /repo --redact --log-opts=--all
+          node deploy/tests/secret-scan.mjs
+      - name: Check publication boundaries and approval gates
+        run: node --test deploy/tests/*.test.mjs
+      - run: git diff --check
+      - run: npm ci --ignore-scripts
+      - run: npm test
+      - run: npm run test:api
+      - run: npm run check:api
+      - run: npm run build
+      - run: npm audit --audit-level=high
+      - name: Isolated PostgreSQL 18 integration tests
+        run: |
+          docker build -f deploy/tests/Dockerfile -t ems-integration-test:ci .
+          docker run --rm --network none ems-integration-test:ci
+      - name: Test deployment failure recovery without a Docker socket
+        run: docker run --rm --network none --user 0 -e EMS_SYNTHETIC_TEST_ONLY=true -v "$PWD:/repo:ro" --entrypoint bash ems-integration-test:ci /repo/deploy/tests/release-safety.test.sh
+      - name: Build production images
+        run: |
+          docker build -f apps/api/Dockerfile -t ems-prep-api:20261105 .
+          docker build -f apps/web/Dockerfile -t ems-prep-web:20261105 .
+          docker build -f deploy/postgres/Dockerfile -t ems-prep-db:20261105 .
+      - name: Container smoke, recovery and rollback checks
+        run: node deploy/tests/container-smoke.mjs
+      - name: Lint operations scripts and workflows
+        run: |
+          docker run --rm -v "$PWD:/src:ro" -w /src koalaman/shellcheck@sha256:bb596a0d169b85ddd81d8b6d3a2ff6d5baf5fca10b97f575ebc647c3dff62b3d -x deploy/scripts/*.sh deploy/postgres/*.sh deploy/tests/*.sh deploy/docker-entrypoint.sh
+          docker run --rm -v "$PWD:/repo:ro" -w /repo rhysd/actionlint@sha256:b1934ee5f1c509618f2508e6eb47ee0d3520686341fec936f3b79331f9315667 -shellcheck=
+      - name: Scan production images
+        run: |
+          for image in ems-prep-api:20261105 ems-prep-web:20261105 ems-prep-db:20261105; do
+            docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy@sha256:790fd66d1697395d8693d1acaa1ea702406a20f109b6fc7bac8db623eca6c06c image --db-repository public.ecr.aws/aquasecurity/trivy-db:2 --scanners vuln --severity HIGH,CRITICAL --exit-code 1 "$image"
+          done

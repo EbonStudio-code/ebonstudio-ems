@@ -44,7 +44,7 @@ export function employeeRoutes({ pool, config, mailer, guards }) {
         VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING id`,
       [user.rows[0].id, data.employeeCode, data.fullName, data.jobTitle, data.department, data.startDate, data.phone]);
       const row = await employee(db, created.rows[0].id);
-      const delivery = await reinvite(db, row.user_id);
+      const delivery = await reinvite(db, row.user_id, config);
       await audit(db, req.actor, 'employees', 'EMPLOYEE_CREATED', row.id);
       return { row, delivery };
     }, req.actor);
@@ -65,7 +65,7 @@ export function employeeRoutes({ pool, config, mailer, guards }) {
       if (data.email && data.email !== row.email) {
         if (row.employment_status !== 'ACTIVE') fail(409, 'EMPLOYEE_INACTIVE', 'Reactivate the employee before changing their email');
         await db.query('UPDATE users SET email_canonical=$2 WHERE id=$1', [row.user_id, data.email]);
-        delivery = await reinvite(db, row.user_id);
+        delivery = await reinvite(db, row.user_id, config);
       }
       await db.query(`UPDATE employees SET full_name=$2,employee_code=$3,job_title=$4,department=$5,start_date=$6,phone=$7,
         version=version+1,updated_at=now() WHERE id=$1`,
@@ -84,7 +84,7 @@ export function employeeRoutes({ pool, config, mailer, guards }) {
       const row = await employee(db, employeeId);
       if (row.account_status !== 'INVITED' || row.employment_status !== 'ACTIVE') fail(409, 'ACCOUNT_NOT_INVITED', 'Only active invited employees can receive a setup invitation');
       await audit(db, req.actor, 'employees', 'INVITATION_REISSUED', row.id);
-      return reinvite(db, row.user_id);
+      return reinvite(db, row.user_id, config);
     }, req.actor);
     send(res, { invitationDelivery: await deliverToken(pool, config, mailer, delivery) });
   });
@@ -122,7 +122,7 @@ export function employeeRoutes({ pool, config, mailer, guards }) {
       if (row.employment_status !== 'INACTIVE') fail(409, 'INVALID_STATE', 'Employee is already active');
       await db.query(`UPDATE employees SET employment_status='ACTIVE',deactivated_at=NULL,deactivation_reason=NULL,
         version=version+1,updated_at=now() WHERE id=$1`, [row.id]);
-      const delivery = await reinvite(db, row.user_id);
+      const delivery = await reinvite(db, row.user_id, config);
       await audit(db, req.actor, 'employees', 'EMPLOYEE_REACTIVATED', row.id);
       return { row: await employee(db, row.id), delivery };
     }, req.actor);

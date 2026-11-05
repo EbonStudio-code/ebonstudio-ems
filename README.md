@@ -2,6 +2,14 @@
 
 **Status: API-connected React workspace and local database setup implemented and tested. The fictional demo remains at `/preview`. Demo CEO is invited; its password and company settings are the next user steps. This is not a production release.**
 
+**Production preparation (5 November 2026):** isolated Docker/Compose, Resend
+delivery with encrypted retries, protected CI/CD and operations procedures are
+prepared locally. The fictional demo now runs only in Vite development, not
+production builds. Start with [VM101 deployment](docs/26-production-deployment.md),
+[Resend and DNS](docs/27-email-and-dns.md), and the
+[current execution log](docs/25-production-execution-log.md). No production or DNS
+changes have been made; historical test counts below are not current launch evidence.
+
 Prepared on 29 October 2026 for a company with **1 CEO and 10 employees**, with a future target of approximately **1,000 total users**.
 
 The stack is **PostgreSQL 18, Express, React, and Node.js**. The user-approved PostgreSQL decision supersedes the original MongoDB/MERN proposal. React uses TypeScript; the backend preserves the user's JavaScript ESM foundation. The architecture is a modular monolith, not separate microservices.

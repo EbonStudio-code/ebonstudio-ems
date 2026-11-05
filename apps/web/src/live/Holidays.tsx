@@ -9,7 +9,7 @@ function Editor({holiday,remove,close}:{holiday:Holiday | null;remove:boolean;cl
   const {company,base,refresh,notify} = useSession();
   const [review,setReview] = useState<{impact:Impact;fields:Record<string,unknown>;reason:string} | null>(null);
   const operation = remove ? 'DELETE' : holiday ? 'UPDATE' : 'CREATE';
-  return <Dialog title={remove ? 'Remove holiday' : holiday ? 'Edit holiday' : 'Add holiday'} close={close} wide>{review ? <AsyncForm label="Confirm calendar change" cancel={() => setReview(null)} submit={async form => {
+  return <Dialog title={remove ? 'Remove Holiday' : holiday ? 'Edit Holiday' : 'Add Holiday'} close={close} wide>{review ? <AsyncForm label="Confirm calendar change" cancel={() => setReview(null)} submit={async form => {
     if (form.get('acknowledge') !== 'on') throw new Error('Acknowledge the current impact before saving.');
     await api.request(holiday ? '/holidays/'+holiday.id : '/holidays',remove ? 'DELETE' : holiday ? 'PATCH' : 'POST',{
       ...review.fields,...(holiday ? {version:holiday.version,reason:review.reason} : {}),impactFingerprint:review.impact.impactFingerprint,acknowledgeImpact:true});

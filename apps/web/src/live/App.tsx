@@ -66,10 +66,10 @@ function Layout() {
   if(error)return <Failure error={error} retry={()=>window.location.reload()}/>;
   if(loading)return <Loading/>;
   return <div className="app-layout live-workspace"><a className="skip-link" href="#main-content">Skip to content</a><aside className="sidebar">
-    <div className="brand"><Brand reversed/><span className="brand-caption">EMPLOYEE MANAGEMENT</span></div>
+    <div className="brand"><Brand reversed/><span className="brand-caption">Employee Management</span></div>
     <Nav/></aside>
     <div className="app-main"><header className="topbar"><div className="topbar-title"><button className="icon-button mobile-menu" aria-label="Open navigation" onClick={()=>setMenu(true)}><Menu size={21}/></button>
-      <span className="breadcrumb">{ceo?'CEO':'Employee'} workspace<span>/</span><strong>{current?.title||'Workspace'}</strong></span></div>
+      <span className="breadcrumb"><span>{ceo?'CEO':'Employee'} Workspace</span><span aria-hidden="true">/</span><strong>{current?.title||'Workspace'}</strong></span></div>
       <div className="topbar-actions">{company&&current?.path!=='dashboard'&&<span className="today-label">{formatDate(dateKey(new Date(),company.timezone),{weekday:'short',year:undefined})}</span>}<ThemeToggle/>
         <div className="account-identity"><Avatar name={session?.displayName||'Team member'}/><div className="account-name"><strong>{session?.displayName}</strong><small>{ceo?'CEO / Admin':'Team member'}</small></div></div>
         <button className="icon-button" aria-label="Sign out" disabled={signingOut} onClick={async()=>{setSigningOut(true);setLogoutError(null);try{await logout();}catch(e){setLogoutError(e);}finally{setSigningOut(false);}}}><LogOut size={18}/></button></div></header>

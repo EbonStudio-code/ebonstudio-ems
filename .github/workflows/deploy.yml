@@ -1,0 +1,81 @@
+name: EMS explicitly approved VM101 deployment
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: Exact 40-character commit SHA already staged and reviewed on VM101
+        type: string
+        required: true
+      operation:
+        type: choice
+        options: [deploy, rollback]
+        required: true
+      confirm:
+        description: Type authorize-ems-vm101 (does not authorize DNS or firewall changes)
+        type: string
+        required: true
+permissions:
+  contents: read
+concurrency:
+  group: ems-production
+  cancel-in-progress: false
+jobs:
+  approval-policy:
+    if: github.ref == 'refs/heads/main' && inputs.confirm == 'authorize-ems-vm101'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - run: node deploy/tests/github-approval.mjs production policy
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+  deploy:
+    needs: approval-policy
+    environment: production
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Verify actual independent approval and exact release CI
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ github.token }}
+          RELEASE: ${{ inputs.release }}
+        run: |
+          node deploy/tests/github-approval.mjs production approved
+          [[ "$RELEASE" =~ ^[a-f0-9]{40}$ ]]
+          count=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/ci.yml/runs?head_sha=$RELEASE&status=success" --jq '[.workflow_runs[] | select(.head_branch == "main" and (.event == "push" or .event == "workflow_dispatch"))] | length')
+          test "$count" -ge 1
+      - name: Run pre-staged immutable release with strict host verification
+        env:
+          RELEASE: ${{ inputs.release }}
+          OPERATION: ${{ inputs.operation }}
+          VM_HOST: ${{ secrets.VM101_HOST }}
+          VM_USER: ${{ secrets.VM101_USER }}
+          SSH_KEY: ${{ secrets.VM101_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.VM101_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          [[ "$RELEASE" =~ ^[a-f0-9]{40}$ ]]
+          [[ "$OPERATION" = deploy || "$OPERATION" = rollback ]]
+          [[ "$VM_HOST" =~ ^[a-zA-Z0-9.-]+$ && "$VM_USER" =~ ^[a-z_][a-z0-9_-]*$ ]]
+          umask 077
+          directory=$(mktemp -d)
+          trap 'rm -f "$directory/key" "$directory/known_hosts"; rmdir "$directory"' EXIT
+          printf '%s\n' "$SSH_KEY" > "$directory/key"
+          printf '%s\n' "$KNOWN_HOSTS" > "$directory/known_hosts"
+          ssh -i "$directory/key" -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes \
+            -o UserKnownHostsFile="$directory/known_hosts" -o ConnectTimeout=15 \
+            "$VM_USER@$VM_HOST" \
+            "set -eu; set -a; . /opt/ems/shared/deploy-policy.env; set +a; EMS_MANIFEST=/opt/ems/releases/$RELEASE/release.env EMS_PREFLIGHT_REPORT=/opt/ems/shared/preflight-reviewed.txt bash /opt/ems/releases/$RELEASE/deploy/scripts/release.sh $OPERATION --approve-production"
+          # No DNS, public ingress, Proxmox, firewall, or existing-container changes.

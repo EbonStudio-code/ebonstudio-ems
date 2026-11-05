@@ -1,10 +1,12 @@
-import { createContext, useContext, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import type { DemoData, Session } from './models';
 import { applyCommand, scopedData } from './domain';
 import type { Command } from './domain';
 import { createDemoData } from './seed';
 import { DATA_KEY, loadDemoData } from './persistence';
+import { DemoContext, useDemo } from './demo-context';
+export { useDemo } from './demo-context';
 
 const SESSION_KEY = 'ems.preview-session';
 type Notice = { message: string; kind: 'success' | 'error' | 'info' } | null;
@@ -57,15 +59,10 @@ function useStoreValue() {
   return { data: scopedData(rawData, session), session, enter, perform, notice, notify, dismissNotice: () => setNotice(null), reset,
     demoPeople: rawData.employees.filter(e => e.status === 'Active' && e.account === 'Active') };
 }
-const DemoContext = createContext<ReturnType<typeof useStoreValue> | null>(null);
+export type DemoStore = ReturnType<typeof useStoreValue>;
 export function DemoProvider({ children }: { children: ReactNode }) {
   const value = useStoreValue();
   return <DemoContext.Provider value={value}>{children}</DemoContext.Provider>;
-}
-export function useDemo() {
-  const value = useContext(DemoContext);
-  if (!value) throw new Error('DemoProvider is missing.');
-  return value;
 }
 export function useWorkspace() {
   const store = useDemo();

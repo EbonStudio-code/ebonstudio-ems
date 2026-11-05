@@ -63,7 +63,7 @@ export function identityRoutes({ pool, config, mailer }) {
       const user = await findUserByEmail(data.email, db);
       if (!user || user.status !== 'ACTIVE') return null;
       await audit(db, { requestId: req.requestId }, 'identity', 'PASSWORD_RECOVERY_REQUESTED', user.id);
-      return issueToken(db, user, 'PASSWORD_RESET');
+      return issueToken(db, user, 'PASSWORD_RESET', config);
     });
     // Return before provider I/O so public response latency cannot reveal SMTP delivery.
     send(res, { message: 'If an eligible account exists, recovery instructions will be sent.' });

@@ -28,7 +28,7 @@ export default function AttendanceClockControl({ history = false }: { history?: 
   if (!now || !company) return <Card title="Today’s Attendance"><ResourceState
     loading={current.loading || (!company && !companyError)} error={current.error || companyError} /></Card>;
   const summary = clockSummary(now.nextAction, now.openRecord, now.todayRecord);
-  return <AttendanceClock summary={summary} timezone={company.timezone} historyTo={history ? base+'/attendance' : undefined}
+  return <AttendanceClock summary={summary} timezone={company.timezone} compact={history} historyTo={history ? base+'/attendance' : undefined}
     action={summary.disabled ? <Button disabled>{summary.action}</Button> : <AsyncForm label={summary.action} submit={async () => {
       await submitClockAction(now);
       refresh();

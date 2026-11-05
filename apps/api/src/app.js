@@ -3,6 +3,7 @@ import helmet from 'helmet';
 import { randomUUID, timingSafeEqual, createHash } from 'node:crypto';
 import { pool as defaultPool } from './core/database.js';
 import { loadConfig } from './core/config.js';
+import { checkSchema } from './core/schema.js';
 import { errorHandler, fail } from './core/errors.js';
 import { featureRegistry, guards, validateModules } from './core/registry.js';
 import { sessionMiddleware, csrfCheck, authenticated, rateLimit } from './modules/identity/session.js';
@@ -39,8 +40,7 @@ export function createApp({ pool = defaultPool, config = loadConfig(), mailer = 
       }
     }
     try {
-      const result = await pool.query("SELECT count(*)::int AS count FROM schema_migrations WHERE name IN ('001_create_users.sql','002_backend.sql')");
-      if (result.rows[0].count !== 2) throw new Error('Migrations missing');
+      await checkSchema(pool);
       res.json({ data: { status: 'ready' } });
     } catch {
       fail(503, 'NOT_READY', 'Service is not ready');

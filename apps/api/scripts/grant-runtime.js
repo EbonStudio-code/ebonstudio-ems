@@ -13,6 +13,7 @@ export async function grantRuntime(db, role) {
     attendance,leave_requests,leave_reservations,tasks,complaints,salary_slips TO ${who}`);
   await db.query(`GRANT SELECT,INSERT ON audit_events,attendance_corrections,leave_history,complaint_messages TO ${who}`);
   await db.query(`GRANT DELETE ON sessions,account_tokens,rate_limits,holidays,leave_reservations TO ${who}`);
+  await db.query(`GRANT SELECT,INSERT,UPDATE,DELETE ON email_outbox TO ${who}`);
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const pool = new pg.Pool({ connectionTimeoutMillis: 5000 });

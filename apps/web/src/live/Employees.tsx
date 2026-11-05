@@ -11,7 +11,7 @@ import type { Employee } from './types';
 function Editor({ employee, close }: {employee: Employee | null; close: () => void}) {
   const { refresh, notify, base } = useSession();
   const navigate = useNavigate();
-  return <Dialog title={employee ? 'Edit employee' : 'Add employee'} close={close}><AsyncForm label={employee ? 'Save employee' : 'Create employee'} cancel={close} submit={async form => {
+  return <Dialog title={employee ? 'Edit Employee' : 'Add Employee'} close={close}><AsyncForm label={employee ? 'Save employee' : 'Create employee'} cancel={close} submit={async form => {
     const payload = Object.fromEntries(['fullName','email','employeeCode','jobTitle','department','startDate','phone'].map(key => [key,value(form,key)]));
     const saved = await api.request<Employee>(employee ? '/employees/'+employee.id : '/employees', employee ? 'PATCH' : 'POST', {...payload,...(employee ? {version: employee.version} : {})});
     refresh(); notify(`Employee saved.${saved.data.invitationDelivery ? ' Invitation delivery: '+saved.data.invitationDelivery+'.' : ''}`);
@@ -59,7 +59,7 @@ export default function Employees() {
           <Button variant={employee.employmentStatus === 'ACTIVE' ? 'danger' : 'secondary'} onClick={() => setAction(employee.employmentStatus === 'ACTIVE' ? 'deactivate' : 'reactivate')}>{employee.employmentStatus === 'ACTIVE' ? 'Deactivate employee' : 'Reactivate employee'}</Button>
         </div>}</Card></div>
       {editing && <Editor employee={employee} close={() => setEditing(false)} />}
-      {action && <Action title={action === 'deactivate' ? 'Deactivate employee' : 'Reactivate employee'} path={`/employees/${employee.id}/${action}`} payload={{version:employee.version}} close={() => setAction(null)} reason={action === 'deactivate'}>
+      {action && <Action title={action === 'deactivate' ? 'Deactivate Employee' : 'Reactivate Employee'} path={`/employees/${employee.id}/${action}`} payload={{version:employee.version}} close={() => setAction(null)} reason={action === 'deactivate'}>
         <p>History is retained. Deactivation revokes access and requires resolving blockers. Reactivation requires fresh password setup.</p>
       </Action>}</>}</>;
   return <><PageHeader title="Employees" eyebrow="YOUR PEOPLE" description="The people behind the work. Manage your team and their access." actions={<Button onClick={() => setEditing(true)}><Plus size={17} aria-hidden="true"/>Add employee</Button>} />

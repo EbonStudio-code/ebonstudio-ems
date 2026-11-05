@@ -18,7 +18,7 @@ function RequestForm({ onClose }: { onClose: () => void }) {
     event.preventDefault(); const form = new FormData(event.currentTarget);
     if (perform({ type: 'leave.create', values: { type: String(form.get('type')) as LeaveRecord['type'], startDate: start, endDate: end, reason: String(form.get('reason')) } }, 'Demo leave request submitted for CEO review.')) onClose();
   }
-  return <Modal title="Request leave" onClose={onClose}><form onSubmit={submit}><div className="form-grid">
+  return <Modal title="Request Leave" onClose={onClose}><form onSubmit={submit}><div className="form-grid">
     <Field label="Leave type" wide><select name="type"><option>Annual</option><option>Sick</option><option>Unpaid</option></select></Field>
     <Field label="Start date"><input type="date" required min={today} value={start} onChange={e => setStart(e.target.value)} /></Field>
     <Field label="End date"><input type="date" required min={start || today} value={end} onChange={e => setEnd(e.target.value)} /></Field>
@@ -37,7 +37,7 @@ export default function Leave() {
   const filtered = data.leaves.filter(l => (!status || l.status === status) && (!employee || l.employeeId === employee));
   const pagination = usePagination(filtered);
   const selected = data.leaves.find(l => l.id === id);
-  const actionDialog = action && <Confirm title={`${action.status === 'Cancelled' ? ceo ? 'Cancel' : 'Withdraw' : action.status === 'Approved' ? 'Approve' : 'Reject'} leave request?`}
+  const actionDialog = action && <Confirm title={`${action.status === 'Cancelled' ? ceo ? 'Cancel' : 'Withdraw' : action.status === 'Approved' ? 'Approve' : 'Reject'} Leave Request?`}
     description={action.status === 'Approved' ? 'The snapshotted working dates will be marked as approved leave. No salary calculation is affected.' : 'The request history will be retained. Rejected or cancelled requests cannot be edited or reopened.'}
     reason={ceo && action.status !== 'Approved'} danger={action.status !== 'Approved'} onClose={() => setAction(null)}
     onConfirm={reason => perform({ type: 'leave.status', id: action.record.id, status: action.status, reason }, `Demo request marked ${action.status.toLowerCase()}.`)} />;
@@ -57,7 +57,7 @@ export default function Leave() {
     <Card><div className="toolbar"><select aria-label="Filter leave status" value={status} onChange={e => { setStatus(e.target.value); pagination.setPage(1); }}><option value="">All statuses</option>{leaveStatuses.map(s => <option key={s}>{s}</option>)}</select>
       {ceo && <select aria-label="Filter leave employee" value={employee} onChange={e => { setEmployee(e.target.value); pagination.setPage(1); }}><option value="">All employees</option>{data.employees.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}</select>}</div>
       {filtered.length ? <Table headings={[...(ceo ? ['Employee'] : []), 'Type', 'Dates', 'Days', 'Status', 'Action']}>{pagination.rows.map(request => <tr key={request.id}>
-        {ceo && <td><Person name={data.employees.find(e => e.id === request.employeeId)?.name ?? 'Employee'} /></td>}<td>{request.type}</td><td>{formatDate(request.startDate)}<small>to {formatDate(request.endDate)}</small></td><td>{request.days.length}</td><td><Badge>{request.status}</Badge></td><td><Link className="text-link" to={`${base}/leave/${request.id}`}>View request</Link></td></tr>)}</Table> : <Empty title="No matching leave requests" description="New requests will appear here." />}
+        {ceo && <td><Person name={data.employees.find(e => e.id === request.employeeId)?.name ?? 'Employee'} /></td>}<td>{request.type}</td><td>{formatDate(request.startDate)}<small>to {formatDate(request.endDate)}</small></td><td>{request.days.length}</td><td><Badge>{request.status}</Badge></td><td><Link className="text-link" to={`${base}/leave/${request.id}`}>View request</Link></td></tr>)}</Table> : <Empty title="No Matching Leave Requests" description="New requests will appear here." />}
       <Pagination {...pagination} onChange={pagination.setPage} />
     </Card>{creating && <RequestForm onClose={() => setCreating(false)} />}{actionDialog}
   </>;

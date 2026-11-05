@@ -11,7 +11,7 @@ export default function AttendanceClockControl({ history = false }: { history?: 
   const current = data.attendance.find(a => a.employeeId === session?.employeeId && !a.checkOut);
   const completed = data.attendance.find(a => a.employeeId === session?.employeeId && a.date === today && a.checkOut);
   const summary = attendanceSummary(current, completed, data.settings.timezone, Date.now(), person?.startDate);
-  return <AttendanceClock summary={summary} timezone={data.settings.timezone} preview historyTo={history ? base+'/attendance' : undefined}
+  return <AttendanceClock summary={summary} timezone={data.settings.timezone} compact={history} preview historyTo={history ? base+'/attendance' : undefined}
     action={<Button disabled={summary.disabled} onClick={() => perform(current ? { type:'attendance.out', id:current.id } : { type:'attendance.in' },
       current ? 'Demo clock-out recorded.' : 'Present — demo attendance recorded. Actual browser time saved.')}>{summary.action}</Button>} />;
 }

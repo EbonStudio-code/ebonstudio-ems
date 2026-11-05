@@ -34,14 +34,14 @@ export default function Layout() {
   return <div className="app-layout">
     <a className="skip-link" href="#main-content">Skip to content</a>
     <aside className="sidebar">
-      <div className="brand"><Brand reversed /><span className="brand-caption">EMPLOYEE MANAGEMENT</span></div>
+      <div className="brand"><Brand reversed /><span className="brand-caption">Employee Management</span></div>
       <NavContent />
       <div className="sidebar-footer"><small>Fictional records · preview only</small></div>
     </aside>
     <div className="app-main">
       <header className="topbar">
         <div className="topbar-title"><button className="icon-button mobile-menu" aria-label="Open navigation" onClick={() => setMenu(true)}><Menu size={21} /></button>
-          <span className="breadcrumb">{ceo ? 'CEO workspace' : 'Employee workspace'}<span>/</span><strong>{current?.title ?? 'Workspace'}</strong></span></div>
+          <span className="breadcrumb"><span>{ceo ? 'CEO Workspace' : 'Employee Workspace'}</span><span aria-hidden="true">/</span><strong>{current?.title ?? 'Workspace'}</strong></span></div>
         <div className="topbar-actions">{current?.path !== 'dashboard' && <span className="today-label">{formatDate(dateKey(new Date(), data.settings.timezone), { weekday: 'short', year: undefined })}</span>}
           <ThemeToggle />
           <div className="account-identity"><Avatar name={name} /><div className="account-name"><strong>{name}</strong><small>{ceo ? 'Admin / CEO' : person?.jobTitle}</small></div></div>
@@ -61,6 +61,6 @@ export default function Layout() {
     </div>
     {notice && <div className={`toast ${notice.kind}`} role={notice.kind === 'error' ? 'alert' : 'status'}><span>{notice.message}</span><button className="icon-button" aria-label="Dismiss message" onClick={dismissNotice}><X size={17} /></button></div>}
     {menu && <Modal title="Navigation" onClose={() => setMenu(false)}><NavContent close={() => setMenu(false)} /><Button variant="secondary" onClick={() => setMenu(false)}>Close navigation</Button></Modal>}
-    {resetOpen && <Confirm title="Reset the demo workspace?" description="This removes only this prototype's browser-saved sample changes and restores the original fictional records." confirmLabel="Reset sample data" onClose={() => setResetOpen(false)} onConfirm={() => { reset(); navigate('/ceo/dashboard'); return true; }} />}
+    {resetOpen && <Confirm title="Reset the Demo Workspace?" description="This removes only this prototype's browser-saved sample changes and restores the original fictional records." confirmLabel="Reset sample data" onClose={() => setResetOpen(false)} onConfirm={() => { reset(); navigate('/ceo/dashboard'); return true; }} />}
   </div>;
 }

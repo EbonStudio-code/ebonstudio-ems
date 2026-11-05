@@ -46,6 +46,20 @@ describe('attendance clock states', () => {
 });
 
 describe('attendance clock presentation', () => {
+  it('keeps dashboard attendance compact without losing actions or saved punches', () => {
+    const render = (summary: ReturnType<typeof clockSummary>) => renderToStaticMarkup(<MemoryRouter><AttendanceClock
+      summary={summary} timezone="Asia/Kolkata" compact action={<button disabled={summary.disabled}>{summary.action}</button>}
+      historyTo="/employee/attendance" /></MemoryRouter>);
+    const ready = render(clockSummary('CHECK_IN',null,null));
+    expect(ready).toContain('Clock in</button>');
+    expect(ready).not.toContain('attendance-live-time');
+    expect(ready).not.toContain('attendance-clock-times');
+    expect(ready).toContain('href="/employee/attendance"');
+    const open = render(clockSummary('CHECK_OUT',record,record));
+    expect(open).toContain('09:00:12');
+    expect(open).toContain('Today’s shift');
+    expect(render(clockSummary('CEO_CORRECTION_REQUIRED',record,null))).toContain('disabled=""');
+  });
   it('displays saved server time to the second in the company timezone', () => {
     const html = renderToStaticMarkup(<MemoryRouter><AttendanceClock
       summary={clockSummary('CHECK_OUT',record,record)} timezone="Asia/Kolkata"

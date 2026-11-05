@@ -4,6 +4,7 @@ import { digest, secret } from './session.js';
 import { findUserByEmail } from './user.repository.js';
 import { fail } from '../../core/errors.js';
 import { transaction, audit } from '../../core/transactions.js';
+import { queueAccountEmail } from './outbox.js';
 
 export const hashPassword = value => hash(value, { algorithm: 2, memoryCost: 19456, timeCost: 2, parallelism: 1 });
 const dummyHash = await hashPassword(secret());
@@ -17,16 +18,22 @@ export async function revokeSessions(db, userId) {
   await db.query('DELETE FROM sessions WHERE user_id=$1', [userId]);
   await db.query('UPDATE users SET session_version=session_version+1,updated_at=now(),version=version+1 WHERE id=$1', [userId]);
 }
-export async function issueToken(db, user, purpose) {
+export async function issueToken(db, user, purpose, config) {
   await db.query('UPDATE account_tokens SET consumed_at=now() WHERE user_id=$1 AND consumed_at IS NULL', [user.id]);
   const token = secret();
   const hours = purpose === 'INVITATION' ? 24 : 0.5;
   const result = await db.query(`INSERT INTO account_tokens(user_id,purpose,token_hash,expires_at)
-    VALUES($1,$2,$3,now()+$4*interval '1 hour') RETURNING id`, [user.id, purpose, digest(token), hours]);
+    VALUES($1,$2,$3,now()+$4*interval '1 hour') RETURNING id,expires_at`, [user.id, purpose, digest(token), hours]);
   if (purpose === 'INVITATION') await db.query('UPDATE users SET invited_at=now(),updated_at=now() WHERE id=$1', [user.id]);
-  return { id: result.rows[0].id, email: user.email_canonical, purpose, token };
+  const delivery = { ...result.rows[0], email: user.email_canonical, purpose, token };
+  if (config?.mailMode === 'resend') {
+    await queueAccountEmail(db, config, user.id, delivery);
+    delivery.queued = true;
+  }
+  return delivery;
 }
 export async function deliverToken(pool, config, mailer, delivery) {
+  if (delivery.queued) return 'pending';
   let status = 'sent';
   try {
     const route = delivery.purpose === 'INVITATION' ? '/accept-invitation' : '/reset-password';
@@ -37,11 +44,11 @@ export async function deliverToken(pool, config, mailer, delivery) {
   await pool.query('UPDATE account_tokens SET delivery_status=$2 WHERE id=$1', [delivery.id, status]);
   return status;
 }
-export async function reinvite(db, userId) {
+export async function reinvite(db, userId, config) {
   await revokeSessions(db, userId);
   const result = await db.query(`UPDATE users SET status='INVITED',password_hash=NULL,updated_at=now()
     WHERE id=$1 RETURNING id,email_canonical`, [userId]);
-  return issueToken(db, result.rows[0], 'INVITATION');
+  return issueToken(db, result.rows[0], 'INVITATION', config);
 }
 export async function redeem(pool, token, purpose, newPassword, actor) {
   // Perform expensive hashing outside the write lock; the token is rechecked inside.
@@ -59,13 +66,13 @@ export async function redeem(pool, token, purpose, newPassword, actor) {
     await audit(db, { ...actor, id: item.user_id }, 'identity', purpose === 'INVITATION' ? 'ACCOUNT_ACTIVATED' : 'PASSWORD_RESET', item.user_id);
   });
 }
-export async function bootstrapCeo(pool, displayName, email, actor = { requestId: randomUUID() }) {
+export async function bootstrapCeo(pool, displayName, email, actor = { requestId: randomUUID() }, config) {
   return transaction(pool, async db => {
     const existing = await db.query("SELECT id FROM users WHERE role='CEO'");
     if (existing.rowCount) fail(409, 'CEO_EXISTS', 'CEO already exists. Use the recovery process.');
     const result = await db.query(`INSERT INTO users(email_canonical,role,ceo_display_name)
       VALUES($1,'CEO',$2) RETURNING id,email_canonical`, [email, displayName]);
     await audit(db, actor, 'identity', 'CEO_BOOTSTRAPPED', result.rows[0].id);
-    return issueToken(db, result.rows[0], 'INVITATION');
+    return issueToken(db, result.rows[0], 'INVITATION', config);
   });
 }

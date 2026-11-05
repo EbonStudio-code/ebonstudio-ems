@@ -1,0 +1,5 @@
+# For a separately reviewed HTTPS reverse proxy on this VM only.
+services:
+  web:
+    ports:
+      - "127.0.0.1:${EMS_HTTP_PORT:?Set a verified unused loopback port}:8080"

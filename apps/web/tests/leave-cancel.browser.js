@@ -1,7 +1,7 @@
 // Run on /employee/leave at the DB-free polish fixture, never the normal app.
 // Reset /__ui-fixture to {role:'EMPLOYEE'} before opening the page.
 export async function runLeaveCancelChecks() {
-  if (location.origin !== 'http://127.0.0.1:5187' || location.pathname !== '/employee/leave') {
+  if (location.origin !== 'http://127.0.0.1:5188' || location.pathname !== '/employee/leave') {
     throw new Error('Isolated Leave UI fixture required.');
   }
   const results=window.__leaveCancelChecks=[];

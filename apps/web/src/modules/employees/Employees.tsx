@@ -19,7 +19,7 @@ function Editor({ employee, onClose }: { employee: Employee | null; onClose: () 
       department: get('department'), startDate: get('startDate'), phone: get('phone'),
     } }, employee ? 'Employee details saved in this demo.' : 'Demo employee created. No invitation email was sent.')) onClose();
   }
-  return <Modal title={employee ? 'Edit employee' : 'Add employee'} onClose={onClose}><form onSubmit={submit}>
+  return <Modal title={employee ? 'Edit Employee' : 'Add Employee'} onClose={onClose}><form onSubmit={submit}>
     <div className="inline-alert info">Use fictional details only. Invitations are simulated.</div>
     <div className="form-grid"><Field label="Full name"><input name="name" required maxLength={120} defaultValue={employee?.name} placeholder="Full name" /></Field>
       <Field label="Work email"><input name="email" type="email" required defaultValue={employee?.email} placeholder="name@example.test" /></Field>
@@ -61,7 +61,7 @@ export default function Employees() {
             <Button variant={selected.status === 'Active' ? 'danger' : 'secondary'} onClick={() => setStatusDialog(true)}>{selected.status === 'Active' ? 'Deactivate employee' : 'Reactivate employee'}</Button>
           </div></Card> : <Card title="Need to Change Something?"><p className="muted">Your name, work email, and employment details are managed by the CEO.</p><Link className="text-link" to={`${base}/complaints`}>Contact the CEO through a complaint</Link></Card>}
         </div></div>
-      {statusDialog && <Confirm title={selected.status === 'Active' ? 'Deactivate employee?' : 'Reactivate employee?'} description={selected.status === 'Active' ? 'Resolve outstanding work first. Deactivation retains the employee history.' : 'Reactivation creates an invited demo account. Simulate invite acceptance afterward.'} reason={selected.status === 'Active'} danger={selected.status === 'Active'} onClose={() => setStatusDialog(false)} onConfirm={reason => perform({ type: 'employee.status', id: selected.id, active: selected.status !== 'Active', reason })}>
+      {statusDialog && <Confirm title={selected.status === 'Active' ? 'Deactivate Employee?' : 'Reactivate Employee?'} description={selected.status === 'Active' ? 'Resolve outstanding work first. Deactivation retains the employee history.' : 'Reactivation creates an invited demo account. Simulate invite acceptance afterward.'} reason={selected.status === 'Active'} danger={selected.status === 'Active'} onClose={() => setStatusDialog(false)} onConfirm={reason => perform({ type: 'employee.status', id: selected.id, active: selected.status !== 'Active', reason })}>
         {selected.status === 'Active' && pending.length > 0 && <div className="inline-alert warning"><strong>Resolve these blockers first:</strong><ul>{pending.map(text => <li key={text}>{text}</li>)}</ul></div>}
       </Confirm>}{editDialog}
     </>;
@@ -71,7 +71,7 @@ export default function Employees() {
     <Card><div className="toolbar"><div className="search-field"><Search size={17} /><input aria-label="Search employees" placeholder="Search name, email, or code..." value={search} onChange={e => { setSearch(e.target.value); pagination.setPage(1); }} /></div>
       <select aria-label="Filter department" value={department} onChange={e => { setDepartment(e.target.value); pagination.setPage(1); }}><option value="">All departments</option>{[...new Set(data.employees.map(e => e.department))].map(d => <option key={d}>{d}</option>)}</select>
       <select aria-label="Filter employee status" value={status} onChange={e => { setStatus(e.target.value); pagination.setPage(1); }}><option value="">All statuses</option><option>Active</option><option>Inactive</option></select></div>
-      {filtered.length ? <Table headings={['Employee', 'Department', 'Job title', 'Status', 'Account', 'Action']}>{pagination.rows.map(e => <tr key={e.id}><td><Person name={e.name} secondary={`${e.code} · ${e.email}`} /></td><td>{e.department}</td><td>{e.jobTitle}</td><td><Badge>{e.status}</Badge></td><td><Badge>{e.account}</Badge></td><td><Link className="text-link" to={`${base}/employees/${e.id}`}>View profile</Link></td></tr>)}</Table> : <Empty title="No matching employees" description="Try another name or clear the filters." />}
+      {filtered.length ? <Table headings={['Employee', 'Department', 'Job title', 'Status', 'Account', 'Action']}>{pagination.rows.map(e => <tr key={e.id}><td><Person name={e.name} secondary={`${e.code} · ${e.email}`} /></td><td>{e.department}</td><td>{e.jobTitle}</td><td><Badge>{e.status}</Badge></td><td><Badge>{e.account}</Badge></td><td><Link className="text-link" to={`${base}/employees/${e.id}`}>View profile</Link></td></tr>)}</Table> : <Empty title="No Matching Employees" description="Try another name or clear the filters." />}
       <Pagination {...pagination} onChange={pagination.setPage} />
     </Card>{editDialog}
   </>;

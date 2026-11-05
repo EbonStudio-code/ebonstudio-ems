@@ -1,0 +1,5 @@
+# One-off operation only. Protected file contains authorized CEO name/email.
+services:
+  api:
+    env_file:
+      - "${EMS_BOOTSTRAP_ENV:?Set absolute protected bootstrap environment path}"

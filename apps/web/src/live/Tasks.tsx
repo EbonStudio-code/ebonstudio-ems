@@ -9,7 +9,7 @@ const states = ['TODO','IN_PROGRESS','DONE','CANCELLED'] as const;
 function Editor({ task, close }: {task:Task | null; close:()=>void}) {
   const {refresh, notify, base} = useSession();
   const navigate = useNavigate();
-  return <Dialog title={task ? 'Edit task' : 'Create task'} close={close}><AsyncForm cancel={close} label="Save task" submit={async form => {
+  return <Dialog title={task ? 'Edit Task' : 'Create Task'} close={close}><AsyncForm cancel={close} label="Save task" submit={async form => {
     const row = await api.request<Task>(task ? '/tasks/'+task.id : '/tasks',task ? 'PATCH' : 'POST',{
       ...(task ? {version:task.version} : {}),title:value(form,'title'),description:value(form,'description'),assigneeEmployeeId:value(form,'assigneeEmployeeId'),
       priority:value(form,'priority'),dueDate:value(form,'dueDate') || null});

@@ -65,7 +65,7 @@ describe('studio style invariants', () => {
     expect(css).toMatch(/\.auth-card > h1 \{[^}]*font-weight: 700/);
   });
   it('uses clean body-family numerals at large sizes', () => {
-    for (const selector of ['.stat-value', '.attendance-totals strong', '.leave-overview > strong']) {
+    for (const selector of ['.stat-value', '.attendance-month dd', '.leave-overview > strong']) {
       const rule = css.slice(css.indexOf(selector+' {')).split('}')[0];
       expect(rule).toContain('font-family: var(--font-body)');
       expect(rule).toContain('font-variant-numeric: proportional-nums');
@@ -102,5 +102,14 @@ describe('studio style invariants', () => {
     expect(css).toContain('.breadcrumb > strong { display: inline; }');
     expect(css).toContain('.button.primary:hover:not(:disabled)');
     expect(css).not.toContain('.button.primary:hover {');
+  });
+  it('uses larger touch targets without scaling up icons or shrinking copy', () => {
+    expect(css).toContain('--touch-target: 44px;');
+    expect(css).toContain('@media (max-width: 950px), (pointer: coarse)');
+    expect(css).toContain('min-width: var(--touch-target); min-height: var(--touch-target);');
+    expect(css).not.toMatch(/\.nav-label\s*\{[^}]*text-transform/);
+    for (const removed of ['progress-summary','progress-track','progress-legend','attendance-totals','dashboard-section-heading','workday-label']) {
+      expect(css).not.toContain('.'+removed);
+    }
   });
 });

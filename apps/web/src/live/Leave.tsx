@@ -9,7 +9,7 @@ function RequestLeave({close}:{close:()=>void}) {
   const {company,refresh,notify,base} = useSession();
   const navigate = useNavigate();
   const [preview,setPreview] = useState<{payload:{type:string;startDate:string;endDate:string;reason:string};dates:string[];count:number} | null>(null);
-  return <Dialog title="Request leave" close={close}>{preview ? <AsyncForm label="Submit leave request" cancel={close} submit={async () => {
+  return <Dialog title="Request Leave" close={close}>{preview ? <AsyncForm label="Submit leave request" cancel={close} submit={async () => {
     const row = await api.request<LeaveRow>('/leave/requests','POST',preview.payload);refresh();close();
     notify(`Request saved for ${row.data.dayCount} working day(s). The dates shown in this record are authoritative.`);navigate(`${base}/leave/${row.data.id}`);
   }}><p><strong>{preview.count} working day(s)</strong>, excluding holidays and nonworking weekdays.</p><p className="live-text">{preview.dates.join(', ')}</p>
@@ -38,7 +38,7 @@ export default function Leave() {
       <div className="page-actions">{ceo && row.state === 'PENDING' && <><Button onClick={() => setAction('approve')}>Approve</Button><Button variant="danger" onClick={() => setAction('reject')}>Reject</Button></>}
         {(row.state === 'PENDING' || (ceo && row.state === 'APPROVED')) && <Button variant="secondary" onClick={() => setAction('cancel')}>{ceo ? 'Cancel leave' : 'Withdraw request'}</Button>}</div></Card>
       <Card title="Decision History">{row.history?.map(h => <article key={h.id} className="live-history"><strong>{label(h.toState)}</strong><small> {timestamp(h.createdAt)}</small><p>{h.reason || 'No additional reason'}</p></article>)}</Card>
-      {action && <Action title={label(action)+' request'} path={`/leave/requests/${row.id}/${action}`} payload={{version:row.version}} close={() => setAction('')} reason={action === 'reject' || (action === 'cancel' && ceo)}><p>Approval retains the stored working dates. Rejection/cancellation releases their reservations.</p></Action>}</>}</>
+      {action && <Action title={label(action)+' Request'} path={`/leave/requests/${row.id}/${action}`} payload={{version:row.version}} close={() => setAction('')} reason={action === 'reject' || (action === 'cancel' && ceo)}><p>Approval retains the stored working dates. Rejection/cancellation releases their reservations.</p></Action>}</>}</>
       : <Card><EnumSelect title="Leave status" options={['PENDING','APPROVED','REJECTED','CANCELLED']} value={state} change={v => {setState(v);setPage(1);}} />
         <ResourceState loading={rows.loading} error={rows.error} />{rows.result && <><NoRows count={rows.result.data.length} /><Table headings={['Type',...(ceo ? ['Employee'] : []),'Dates','Days','Status']}>{rows.result.data.map(l => <tr key={l.id}><td><Link to={`${base}/leave/${l.id}`}>{l.type}</Link></td>{ceo && <td><PersonLink id={l.employeeId} /></td>}<td>{l.startDate} to {l.endDate}</td><td>{l.dayCount}</td><td><Badge>{label(l.state)}</Badge></td></tr>)}</Table><Pager page={rows.result.pagination} change={setPage} /></>}</Card>}
     {create && <RequestLeave close={() => setCreate(false)} />}</>;

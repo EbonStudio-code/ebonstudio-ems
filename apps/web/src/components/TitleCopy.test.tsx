@@ -9,8 +9,9 @@ describe('heading and navigation copy', () => {
       'My Profile', 'Leave Requests', 'Salary Slips', 'Company Settings', 'Audit History', 'Account Security',
     ]);
     expect(modules.flatMap(m => m.employeeTitle ? [m.employeeTitle] : [])).toEqual([
-      'My Attendance', 'My Leave', 'My Tasks', 'My Complaints', 'My Salary Slips',
+      'My Attendance', 'My Leave', 'My Tasks', 'My Complaints',
     ]);
+    expect(modules.find(m => m.id === 'salary-slips')?.title).toBe('Salary Slips');
   });
   it('preserves user-written names and description casing instead of transforming all text', () => {
     const title = 'iOS and API v2: review eBay';

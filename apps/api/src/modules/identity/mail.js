@@ -4,9 +4,11 @@ import { resolve, join } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
+import { createResendMailer } from './resend.js';
 const executeFile = promisify(execFile);
 
 export function createMailer(config) {
+  if (config.mailMode === 'resend') return createResendMailer(config);
   if (config.mailMode === 'disabled') return { send: async () => { throw new Error('Delivery is disabled'); } };
   if (config.mailMode === 'preview') {
     if (config.production) throw new Error('Preview delivery is forbidden in production');

@@ -96,7 +96,7 @@ export const label = (state: string) => ({TODO: 'To do', IN_PROGRESS: 'In progre
 export function EnumSelect({ title, options, value: selected, change }: {title: string; options: readonly string[]; value: string; change: (value: string) => void}) {
   return <Field label={title}><select value={selected} onChange={e => change(e.target.value)}><option value="">All</option>{options.map(v => <option key={v} value={v}>{label(v)}</option>)}</select></Field>;
 }
-export function NoRows({ count }: {count: number}) { return count ? null : <Empty title="No records found" description="Try different filters or create the first record." />; }
+export function NoRows({ count }: {count: number}) { return count ? null : <Empty title="No Records Found" description="Try different filters or create the first record." />; }
 export function PersonLink({ id }: {id: string}) {
   const {ceo, base} = useSession();
   const person = useResource<Employee>(ceo ? '/employees/' + id : null);

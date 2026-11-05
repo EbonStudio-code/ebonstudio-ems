@@ -27,14 +27,14 @@ export default function Complaints() {
           await api.request(`/complaints/${row.id}/messages`,'POST',{version:row.version,text:value(form,'text')});refresh();notify('Reply saved.');
         }}><Field label="Reply"><textarea name="text" required maxLength={5000} rows={4} /></Field></AsyncForm> : <p>Closed complaints are read-only.</p>}
       </Card>
-      {action === 'RESOLVED' ? <Dialog title="Resolve complaint" close={() => setAction('')}><AsyncForm label="Resolve complaint" cancel={() => setAction('')} submit={async form => {
+      {action === 'RESOLVED' ? <Dialog title="Resolve Complaint" close={() => setAction('')}><AsyncForm label="Resolve complaint" cancel={() => setAction('')} submit={async form => {
         await api.request(`/complaints/${row.id}/status`,'POST',{version:row.version,state:action,resolutionText:value(form,'resolutionText')});setAction('');refresh();notify('Resolution and status saved together.');
       }}><Field label="Resolution message"><textarea name="resolutionText" required maxLength={5000} rows={4} /></Field></AsyncForm></Dialog>
-        : action && <Action title={action === 'CLOSED' ? 'Close complaint' : 'Move to review'} path={`/complaints/${row.id}/status`} payload={{version:row.version,state:action}} close={() => setAction('')}><p>Original submission and messages remain in immutable history.</p></Action>}
+        : action && <Action title={action === 'CLOSED' ? 'Close Complaint' : 'Move to Review'} path={`/complaints/${row.id}/status`} payload={{version:row.version,state:action}} close={() => setAction('')}><p>Original submission and messages remain in immutable history.</p></Action>}
     </>}</> : <Card><div className="toolbar"><EnumSelect title="Complaint status" options={['OPEN','IN_REVIEW','RESOLVED','CLOSED']} value={state} change={v => {setState(v);setPage(1);}} />
       <EnumSelect title="Category" options={['WORKPLACE','PAY','TECHNICAL','OTHER']} value={category} change={v => {setCategory(v);setPage(1);}} /></div>
       <ResourceState loading={rows.loading} error={rows.error} />{rows.result && <><NoRows count={rows.result.data.length} /><Table headings={['Subject','Category','Status','Created']}>{rows.result.data.map(c => <tr key={c.id}><td><Link to={`${base}/complaints/${c.id}`}>{c.subject}</Link></td><td>{label(c.category)}</td><td><Badge>{label(c.state)}</Badge></td><td>{timestamp(c.createdAt)}</td></tr>)}</Table><Pager page={rows.result.pagination} change={setPage} /></>}</Card>}
-    {create && <Dialog title="Submit complaint" close={() => setCreate(false)}><AsyncForm label="Submit complaint" cancel={() => setCreate(false)} submit={async form => {
+    {create && <Dialog title="Submit Complaint" close={() => setCreate(false)}><AsyncForm label="Submit complaint" cancel={() => setCreate(false)} submit={async form => {
       const result = await api.request<Complaint>('/complaints','POST',{subject:value(form,'subject'),category:value(form,'category'),description:value(form,'description')});
       setCreate(false);refresh();navigate(`${base}/complaints/${result.data.id}`);
     }}><p className="inline-alert info">Your identity and this conversation are visible to the CEO. There is no anonymous or independent-review channel here.</p>

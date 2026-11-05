@@ -16,7 +16,7 @@ function HolidayEditor({ holiday, onClose }: { holiday: Holiday | null; onClose:
     event.preventDefault(); const form = new FormData(event.currentTarget);
     if (perform({ type: 'holiday.save', id: holiday?.id, values: { name: String(form.get('name')).trim(), date, note: String(form.get('note')).trim() }, reason: String(form.get('reason') ?? ''), acknowledged: form.get('acknowledge') === 'on' }, 'Demo calendar updated. Existing leave snapshots were retained.')) onClose();
   }
-  return <Modal title={holiday ? 'Edit holiday' : 'Add holiday'} onClose={onClose}><form onSubmit={submit} className="stack">
+  return <Modal title={holiday ? 'Edit Holiday' : 'Add Holiday'} onClose={onClose}><form onSubmit={submit} className="stack">
     <Field label="Holiday name"><input name="name" required maxLength={120} defaultValue={holiday?.name} /></Field>
     <Field label="Holiday date"><input type="date" required min={today} value={date} onChange={e => setDate(e.target.value)} /></Field>
     <Field label="Note (optional)"><textarea name="note" maxLength={500} defaultValue={holiday?.note} rows={2} /></Field>
@@ -52,7 +52,7 @@ export default function Holidays() {
           const holiday = data.holidays.find(h => h.date === date);
           return <div key={i} className={`calendar-cell${!valid ? ' outside' : ''}${i % 7 >= 5 ? ' weekend' : ''}`}><span className={date === today ? 'calendar-today' : ''}>{valid ? number : ''}</span>
             {valid && holiday && <button className="calendar-event" onClick={() => setDetails(holiday)}>{holiday.name}</button>}</div>;
-        })}</div></div> : yearHolidays.length ? <Table headings={['Holiday', 'Date', 'Note', ...(ceo ? ['Actions'] : [])]}>{yearHolidays.map(h => <tr key={h.id}><td><strong>{h.name}</strong></td><td>{formatDate(h.date, { weekday: 'short' })}</td><td>{h.note || '—'}</td>{ceo && <td>{h.date >= today ? <div className="inline"><button className="icon-button" aria-label={`Edit ${h.name}`} onClick={() => setEditing(h)}><Pencil size={16} /></button><button className="icon-button danger-text" aria-label={`Remove ${h.name}`} onClick={() => setRemoving(h)}><Trash2 size={16} /></button></div> : <span className="muted">Read-only</span>}</td>}</tr>)}</Table> : <Empty title={`No holidays for ${year}`} description="Use the arrows to change the year, or add a holiday." />}
+        })}</div></div> : yearHolidays.length ? <Table headings={['Holiday', 'Date', 'Note', ...(ceo ? ['Actions'] : [])]}>{yearHolidays.map(h => <tr key={h.id}><td><strong>{h.name}</strong></td><td>{formatDate(h.date, { weekday: 'short' })}</td><td>{h.note || '—'}</td>{ceo && <td>{h.date >= today ? <div className="inline"><button className="icon-button" aria-label={`Edit ${h.name}`} onClick={() => setEditing(h)}><Pencil size={16} /></button><button className="icon-button danger-text" aria-label={`Remove ${h.name}`} onClick={() => setRemoving(h)}><Trash2 size={16} /></button></div> : <span className="muted">Read-only</span>}</td>}</tr>)}</Table> : <Empty title={`No Holidays for ${year}`} description="Use the arrows to change the year, or add a holiday." />}
     </Card>
     <div className="section-heading"><h2>Upcoming Days Off</h2><span className="muted">Company calendar · {data.settings.timezone}</span></div>
     <div className="holiday-cards">{[...data.holidays].filter(h => h.date >= today).sort((a, b) => a.date.localeCompare(b.date)).map(h => <button key={h.id} className="holiday-card" onClick={() => setDetails(h)}><CalendarDays size={21} /><strong>{h.name}</strong><span>{formatDate(h.date, { weekday: 'short' })}</span></button>)}</div>
@@ -60,7 +60,7 @@ export default function Holidays() {
     {details && <Modal title={details.name} onClose={() => setDetails(null)}><p><strong>{formatDate(details.date, { weekday: 'long' })}</strong></p><p>{details.note || 'Company-wide full-day holiday.'}</p>{details.date < today && <p className="muted">Past holidays are read-only.</p>}
       <div className="form-actions">{ceo && details.date >= today && <><Button variant="danger" onClick={() => { setRemoving(details); setDetails(null); }}>Remove holiday</Button><Button onClick={() => { setEditing(details); setDetails(null); }}>Edit holiday</Button></>}<Button variant="secondary" onClick={() => setDetails(null)}>Close</Button></div>
     </Modal>}
-    {removing && <Confirm title="Remove this holiday?" description={`${removing.name}: ${formatDate(removing.date)}. ${holidayImpact(data, [removing.date]).length} existing leave request(s) intersect this date. Existing leave snapshots will remain unchanged.`} reason danger confirmLabel="Remove holiday" onClose={() => setRemoving(null)} onConfirm={reason => perform({ type: 'holiday.remove', id: removing.id, reason, acknowledged: true })}>
+    {removing && <Confirm title="Remove This Holiday?" description={`${removing.name}: ${formatDate(removing.date)}. ${holidayImpact(data, [removing.date]).length} existing leave request(s) intersect this date. Existing leave snapshots will remain unchanged.`} reason danger confirmLabel="Remove holiday" onClose={() => setRemoving(null)} onConfirm={reason => perform({ type: 'holiday.remove', id: removing.id, reason, acknowledged: true })}>
       <label className="checkbox-field"><input type="checkbox" required />I acknowledge the calendar impact.</label>
     </Confirm>}
   </>;

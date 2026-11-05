@@ -17,7 +17,7 @@ function TaskEditor({ task, onClose }: { task: Task | null; onClose: () => void 
       assigneeId: String(form.get('assigneeId')), priority: String(form.get('priority')) as Task['priority'], dueDate: String(form.get('dueDate')),
     } }, task ? 'Demo task updated.' : 'Demo task assigned.')) onClose();
   }
-  return <Modal title={task ? 'Edit task' : 'Assign a task'} onClose={onClose}><form onSubmit={submit}><div className="form-grid">
+  return <Modal title={task ? 'Edit Task' : 'Assign a Task'} onClose={onClose}><form onSubmit={submit}><div className="form-grid">
     <Field label="Task title" wide><input name="title" required maxLength={120} defaultValue={task?.title} placeholder="What needs to be done?" /></Field>
     <Field label="Description" wide><textarea name="description" maxLength={5000} rows={4} defaultValue={task?.description} /></Field>
     <Field label="Assign to"><select name="assigneeId" required defaultValue={task?.assigneeId}>{data.employees.filter(e => e.status === 'Active').map(e => <option key={e.id} value={e.id}>{e.name}</option>)}</select></Field>
@@ -54,7 +54,7 @@ export default function Tasks() {
       <select aria-label="Filter task status" value={status} onChange={e => { setStatus(e.target.value); pagination.setPage(1); }}><option value="">All statuses</option>{taskStatuses.map(s => <option key={s}>{s}</option>)}</select>
       <select aria-label="Filter task priority" value={priority} onChange={e => { setPriority(e.target.value); pagination.setPage(1); }}><option value="">All priorities</option><option>Low</option><option>Normal</option><option>High</option></select></div>
       {filtered.length ? <Table headings={['Task', ...(ceo ? ['Assigned to'] : []), 'Priority', 'Due date', 'Status', 'Action']}>{pagination.rows.map(task => <tr key={task.id}><td><Link className="table-title" to={`${base}/tasks/${task.id}`}>{task.title}</Link></td>
-        {ceo && <td><Person name={data.employees.find(e => e.id === task.assigneeId)?.name ?? 'Employee'} /></td>}<td><Badge>{task.priority}</Badge></td><td>{task.dueDate ? formatDate(task.dueDate) : 'No date'}{task.dueDate && task.dueDate < today && !['Done', 'Cancelled'].includes(task.status) && <small className="danger-text">Overdue</small>}</td><td><Badge>{task.status}</Badge></td><td><Link className="text-link" to={`${base}/tasks/${task.id}`}>View task</Link></td></tr>)}</Table> : <Empty title="No matching tasks" description="Try changing the filters, or assign a new task." />}
+        {ceo && <td><Person name={data.employees.find(e => e.id === task.assigneeId)?.name ?? 'Employee'} /></td>}<td><Badge>{task.priority}</Badge></td><td>{task.dueDate ? formatDate(task.dueDate) : 'No date'}{task.dueDate && task.dueDate < today && !['Done', 'Cancelled'].includes(task.status) && <small className="danger-text">Overdue</small>}</td><td><Badge>{task.status}</Badge></td><td><Link className="text-link" to={`${base}/tasks/${task.id}`}>View task</Link></td></tr>)}</Table> : <Empty title="No Matching Tasks" description="Try changing the filters, or assign a new task." />}
       <Pagination {...pagination} onChange={pagination.setPage} />
     </Card>{editor}
   </>;

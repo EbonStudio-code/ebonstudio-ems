@@ -44,7 +44,7 @@ export default function Auth({ mode = 'login', initialToken = '' }: {mode?: 'log
             <Field label="Confirm password"><input name="confirm" type="password" autoComplete="new-password" required minLength={12} maxLength={128} /></Field></>}
         </AsyncForm>}
       <div className="auth-links">{mode === 'login' ? <Link to="/forgot-password">Forgot password?</Link> : <Link to="/login">Back to sign in</Link>}
-        <a href="/preview/login">Open fictional demo</a></div>
+        {import.meta.env.DEV && <a href="/preview/login">Open fictional demo</a>}</div>
       <p className="auth-disclaimer">Your browser stores only a protected session cookie, not account passwords or private records.</p>
     </div></main></div>;
 }

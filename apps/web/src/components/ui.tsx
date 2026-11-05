@@ -2,7 +2,7 @@ import { useEffect, useId, useRef, useState } from 'react';
 import type { ButtonHTMLAttributes, FormEvent, ReactNode } from 'react';
 import { ArrowRight, ChevronLeft, ChevronRight, Inbox, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useDemo } from '../core/store';
+import { useDemo } from '../core/demo-context';
 import { usePageTitle } from '../core/usePageTitle';
 
 export function Button({ variant = 'primary', className = '', children, ...props }: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: 'primary' | 'secondary' | 'danger' | 'ghost' }) {
@@ -34,7 +34,7 @@ export function Person({ name, secondary }: { name: string; secondary?: string }
 export function Field({ label, children, hint, wide = false }: { label: string; children: ReactNode; hint?: string; wide?: boolean }) {
   return <label className={`field${wide ? ' full' : ''}`}><span>{label}</span>{children}{hint && <small>{hint}</small>}</label>;
 }
-export function Empty({ title = 'Nothing here yet', description = 'New records will appear here.', action }: { title?: string; description?: string; action?: ReactNode }) {
+export function Empty({ title = 'Nothing Here Yet', description = 'New records will appear here.', action }: { title?: string; description?: string; action?: ReactNode }) {
   return <div className="empty"><Inbox size={30} strokeWidth={1.4} /><h3>{title}</h3><p>{description}</p>{action}</div>;
 }
 export function LoadingSkeleton({ layout = 'rows', label = 'Loading records…' }: { layout?: 'rows' | 'dashboard'; label?: string }) {

@@ -1,11 +1,15 @@
 // UI-only synthetic fixture. No database, real account, mailer, or API proxy.
 // Run from apps/web: node tests/polish-fixture.mjs
+// Set EMS_UI_FIXTURE_PORT for a different review port; browser regression harnesses use 5187.
 import { fileURLToPath } from 'node:url';
 import { createServer } from 'vite';
 import react from '@vitejs/plugin-react';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
-const port = 5187;
+const port = Number(process.env.EMS_UI_FIXTURE_PORT ?? 5187);
+if (!Number.isInteger(port) || port < 1024 || port > 65535) {
+  throw new Error('EMS_UI_FIXTURE_PORT must be an integer between 1024 and 65535.');
+}
 const timezone = 'Asia/Kolkata';
 const day = () => new Intl.DateTimeFormat('en-CA', {timeZone:timezone,year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
 let role = 'CEO', scenario = 'ready', punch = null;

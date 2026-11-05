@@ -43,7 +43,7 @@ export default function Attendance() {
         <dt>Clock in</dt><dd>{timestamp(row.checkInAt)}</dd><dt>Clock out</dt><dd>{timestamp(row.checkOutAt)}</dd><dt>Duration</dt><dd>{row.durationSeconds === null ? 'Open' : `${Math.floor(row.durationSeconds/3600)}h ${Math.floor(row.durationSeconds%3600/60)}m`}</dd>
         <dt>Nonworking punch</dt><dd>{row.nonWorkingDayFlag ? 'Yes' : 'No'}</dd><dt>Leave at punch time</dt><dd>{row.approvedLeaveFlag ? 'Yes' : 'No'}</dd><dt>Current approved-leave overlap</dt><dd>{row.currentApprovedLeaveOverlap ? 'Yes' : 'No'}</dd></dl></Card>
       <Card title="Correction History">{row.corrections && <><NoRows count={row.corrections.data.length} />{row.corrections.data.map(c => <article className="live-history" key={c.id}><strong>{timestamp(c.createdAt)}</strong><p>{c.reason}</p><p>Before: {timestamp(c.beforeValues.checkInAt)} to {timestamp(c.beforeValues.checkOutAt)}</p><p>After: {timestamp(c.afterValues.checkInAt)} to {timestamp(c.afterValues.checkOutAt)}</p></article>)}<Pager page={row.corrections.pagination} change={setPage} /></>}</Card>
-      {correction && <Dialog title="Correct attendance" close={() => setCorrection(false)}><AsyncForm label="Save correction" cancel={() => setCorrection(false)} submit={async form => {
+      {correction && <Dialog title="Correct Attendance" close={() => setCorrection(false)}><AsyncForm label="Save correction" cancel={() => setCorrection(false)} submit={async form => {
         const out = value(form,'checkOutAt');
         await api.request(`/attendance/${row.id}/corrections`,'POST',{version:row.version,checkInAt:new Date(value(form,'checkInAt')+'Z').toISOString(),
           checkOutAt:out ? new Date(out+'Z').toISOString() : null,reason:value(form,'reason')});

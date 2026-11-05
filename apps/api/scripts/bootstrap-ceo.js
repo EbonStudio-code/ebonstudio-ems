@@ -8,7 +8,7 @@ import { transaction, audit } from '../src/core/transactions.js';
 
 try {
   const config = loadConfig();
-  if (config.mailMode === 'disabled') throw new Error('Choose preview or SMTP delivery explicitly before CEO bootstrap');
+  if (config.mailMode === 'disabled') throw new Error('Choose an email provider explicitly before CEO bootstrap');
   const mailer = createMailer(config);
   let delivery;
   if (process.argv.includes('--resend')) {
@@ -17,11 +17,11 @@ try {
       if (result.rowCount !== 1) throw new Error('No invited CEO account exists. Active accounts use password recovery.');
       const actor = { requestId: randomUUID() };
       await audit(db, actor, 'identity', 'CEO_INVITATION_REISSUED', result.rows[0].id);
-      return issueToken(db, result.rows[0], 'INVITATION');
+      return issueToken(db, result.rows[0], 'INVITATION', config);
     });
   } else {
     const data = parse(object({ displayName: text(), email }), { displayName: process.env.BOOTSTRAP_CEO_NAME, email: process.env.BOOTSTRAP_CEO_EMAIL });
-    delivery = await bootstrapCeo(pool, data.displayName, data.email);
+    delivery = await bootstrapCeo(pool, data.displayName, data.email, undefined, config);
   }
   const status = await deliverToken(pool, config, mailer, delivery);
   console.log(`CEO setup delivery: ${status}. Tokens and account details are not printed.`);

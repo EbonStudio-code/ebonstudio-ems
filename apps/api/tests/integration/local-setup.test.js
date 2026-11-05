@@ -43,14 +43,14 @@ test('Local setup backs up before adopting 001, preserves data and grants a limi
       assert.equal(result.accounts,1);
       assert.equal(result.accountCountUnchanged,true);
       assert.equal(result.runtimeVerified,true);
-      assert.deepEqual(result.migrations,['Baselined 001_create_users.sql','Applied 002_backend.sql']);
+      assert.deepEqual(result.migrations,['Baselined 001_create_users.sql','Applied 002_backend.sql','Applied 003_email_outbox.sql']);
       const archive = await readFile(join(result.backupDirectory,'database.dump'));
       const manifest = JSON.parse(await readFile(join(result.backupDirectory,'manifest.json'),'utf8'));
       assert.equal(archive.subarray(0,5).toString(),'PGDMP');
       assert.equal(createHash('sha256').update(archive).digest('hex'),manifest.sha256);
       const runtime = new pg.Pool({...fixture.connection,database:'employee_management_dev',user:app.PGUSER,password});
       pools.push(runtime);
-      assert.equal((await runtime.query('SELECT count(*)::int AS n FROM schema_migrations')).rows[0].n,2);
+      assert.equal((await runtime.query('SELECT count(*)::int AS n FROM schema_migrations')).rows[0].n,3);
       assert.equal((await runtime.query('SELECT email_canonical FROM users')).rows[0].email_canonical,'setup-ceo@example.test');
       await assert.rejects(runtime.query('CREATE TABLE public.not_allowed(id int)'),{code:'42501'});
       await assert.rejects(runtime.query('DELETE FROM users'),{code:'42501'});

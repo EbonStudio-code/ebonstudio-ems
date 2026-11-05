@@ -1,5 +1,9 @@
 # 10. Deployment and Operations
 
+**Current target/runbook:** [Production deployment on VM101](26-production-deployment.md)
+and [Resend/DNS](27-email-and-dns.md) supersede the earlier provider-selection
+proposals below. See [execution log](25-production-execution-log.md) for actual checks.
+
 **Status:** Production runbook remains proposed. The authorized local database backup/migration/grants and fictional CEO invitation succeeded; see [Backend setup](14-backend-implementation.md). No infrastructure was created/contacted for public deployment.
 
 The [connected workspace](15-connected-workspace.md) now uses a same-origin Vite development proxy. Production still needs a reviewed HTTPS reverse proxy and static asset setup. `setup:local` has an isolated backup/restore regression; it is not proof of actual-data recovery, offsite backups or a deployment restore drill.

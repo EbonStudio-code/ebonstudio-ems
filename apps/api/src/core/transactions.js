@@ -1,4 +1,5 @@
 import { fail } from './errors.js';
+import { queueHrEmail } from '../modules/identity/outbox.js';
 
 // One company: serialize domain writes across API processes. Reads remain concurrent.
 // This deliberately favors correctness; measure before replacing it with finer locks.
@@ -27,6 +28,7 @@ export async function transaction(pool, work, actor) {
   }
 }
 export async function audit(db, actor, module, action, entityId, reason = null) {
-  await db.query(`INSERT INTO audit_events(actor_user_id,module,action,entity_id,request_id,reason)
-    VALUES($1,$2,$3,$4,$5,$6)`, [actor.id || null, module, action, entityId, actor.requestId, reason]);
+  const result = await db.query(`INSERT INTO audit_events(actor_user_id,module,action,entity_id,request_id,reason)
+    VALUES($1,$2,$3,$4,$5,$6) RETURNING id`, [actor.id || null, module, action, entityId, actor.requestId, reason]);
+  await queueHrEmail(db, actor, action, entityId, result.rows[0].id);
 }

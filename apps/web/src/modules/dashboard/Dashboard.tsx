@@ -1,60 +1,79 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, CalendarCheck2, CalendarDays, CheckCircle2, Clock3, ListTodo, MessageSquareText, Users } from 'lucide-react';
-import { Badge, Card, Empty, Person, Stat, Table } from '../../components/ui';
+import { ArrowRight, CalendarDays, Clock3, ListTodo, Users } from 'lucide-react';
+import { Badge, Card, CompactState, Person, Stat } from '../../components/ui';
+import DashboardSections from '../../components/DashboardSections';
+import type { DashboardSection } from '../../components/DashboardSections';
 import StudioIntro from '../../components/StudioIntro';
 import { useWorkspace } from '../../core/store';
 import { dateKey, formatDate, formatTime } from '../../core/dates';
+import { attendanceSummary } from '../../core/attendance-summary';
 import AttendanceClockControl from '../attendance/AttendanceClockControl';
 
 export default function Dashboard() {
-  const { data, ceo, base, person, session } = useWorkspace();
+  const { data, ceo, base } = useWorkspace();
   const today = dateKey(new Date(), data.settings.timezone);
   const active = data.employees.filter(e => e.status === 'Active' && e.startDate <= today);
   const todayRecords = data.attendance.filter(a => a.date === today);
   const pending = data.leaves.filter(l => l.status === 'Pending');
   const unfinished = data.tasks.filter(t => !['Done', 'Cancelled'].includes(t.status));
   const overdue = unfinished.filter(t => t.dueDate && t.dueDate < today);
+  const work = [...unfinished].sort((a, b) =>
+    Number(Boolean(b.dueDate && b.dueDate < today)) - Number(Boolean(a.dueDate && a.dueDate < today)));
   const complaints = data.complaints.filter(c => !['Resolved', 'Closed'].includes(c.status));
   const onLeave = data.leaves.filter(l => l.status === 'Approved' && l.days.includes(today));
   const holidays = [...data.holidays].filter(h => h.date >= today).sort((a, b) => a.date.localeCompare(b.date));
-  const current = data.attendance.find(a => a.employeeId === session?.employeeId && !a.checkOut);
-  const presentToday = todayRecords.some(a => a.employeeId === session?.employeeId);
-  const firstName = person?.name.split(' ')[0] ?? 'there';
-  const taskTotal = data.tasks.filter(t => t.status !== 'Cancelled').length;
-  const taskCompleted = data.tasks.filter(t => t.status === 'Done').length;
-  return <div className="studio-dashboard"><StudioIntro title={ceo ? 'Your Team, at a Glance' : `Hello, ${firstName}`} description={ceo ? 'A clear view of your people, their work and what needs your attention.' : 'Your people, plans and next moves. Here is what your workday looks like.'}
-    actions={<Link className="button primary" to={`${base}/${ceo ? 'employees' : 'tasks'}`}>{ceo ? 'View team' : 'View my tasks'}<ArrowRight size={16} /></Link>}
-    meta={<div className="workday-strip"><span><CalendarDays size={16} aria-hidden="true" /><time dateTime={today}>{formatDate(today, {weekday:'long'})}</time></span><span>{data.settings.timezone}<span className="workday-label">Fictional preview</span></span></div>} />
+  const corrections = data.attendance.filter(a => !a.checkOut &&
+    attendanceSummary(a, undefined, data.settings.timezone).action === 'Correction required');
+  const viewAll = (path: string, text = 'View all') => <Link className="text-link" to={`${base}/${path}`}>{text}<ArrowRight size={14} aria-hidden="true" /></Link>;
+  const sections: DashboardSection[] = [{
+    id:'tasks', priority:overdue.length ? 2 : 0, quiet:!unfinished.length,
+    content:unfinished.length ? <Card title={ceo ? 'Work in Focus' : 'Your Next Tasks'} className={overdue.length ? 'dashboard-attention' : ''} action={viewAll('tasks')}>
+      {(!ceo || overdue.length > 0) && <div className="section-intro">{!ceo && <span>{unfinished.length} unfinished tasks</span>}
+        {overdue.length > 0 && <span className="danger-text">{overdue.length} overdue</span>}</div>}
+      <div className="list-stack">{work.slice(0,5).map(task => <Link className="task-summary" to={`${base}/tasks/${task.id}`} key={task.id}>
+        <span className="task-check"><ListTodo size={18} aria-hidden="true" /></span><div><strong>{task.title}</strong>
+          <small className={task.dueDate && task.dueDate < today ? 'danger-text' : undefined}>{task.dueDate ? `${task.dueDate < today ? 'Overdue' : 'Due'} ${formatDate(task.dueDate)}` : 'No due date'}</small>
+        </div><Badge>{task.status}</Badge></Link>)}</div>
+    </Card> : <CompactState title="Tasks" description="No unfinished tasks." to={`${base}/tasks`} action="View tasks" />,
+  }];
+  if (ceo) sections.push({id:'attendance', priority:corrections.length ? 1 : 0,
+    content:<Card title={corrections.length ? 'Attendance Corrections' : 'Today’s Attendance'} className={corrections.length ? 'dashboard-attention' : ''} action={viewAll('attendance', corrections.length ? 'Review attendance' : 'View attendance')}>
+      {corrections.length > 0 && <p className="warning-text">{corrections.length} earlier open record{corrections.length === 1 ? '' : 's'} to review.</p>}
+      {todayRecords.length ? todayRecords.slice(0,5).map(record => <div className="attendance-person" key={record.id}>
+        <Person name={data.employees.find(e => e.id === record.employeeId)?.name ?? 'Employee'} secondary={`Clocked in ${formatTime(record.checkIn, data.settings.timezone)}`} /><Badge>Present</Badge>
+      </div>) : <p className="dashboard-note">No check-ins recorded today.</p>}
+    </Card>});
+  sections.push({
+    id:'leave', priority:ceo && pending.length ? 3 : 0, quiet:!pending.length && !onLeave.length,
+    content:pending.length || onLeave.length ? <Card title={ceo ? pending.length ? 'Leave Approvals' : 'Time Off & Requests' : 'My Leave Requests'} className={ceo && pending.length ? 'dashboard-attention' : ''} action={viewAll('leave', ceo && pending.length ? 'Review requests' : 'View leave')}>
+      {pending.length > 0 && <div className="leave-overview"><strong>{pending.length}</strong><div><span>{ceo ? 'Awaiting your approval' : 'Waiting for CEO review'}</span></div></div>}
+      {onLeave.length > 0 && <p className="dashboard-note">{onLeave.length} on approved leave today.</p>}
+      <div className="list-stack">{pending.slice(0,3).map(request => <Link className="request-summary" to={`${base}/leave/${request.id}`} key={request.id}>
+        <Person name={data.employees.find(e => e.id === request.employeeId)?.name ?? 'Employee'} secondary={`${request.type} leave · ${request.days.length} day${request.days.length === 1 ? '' : 's'}`} />
+        <div><small>{formatDate(request.startDate, {year:undefined})}</small><Badge>{request.status}</Badge></div>
+      </Link>)}</div>
+    </Card> : <CompactState title="Leave Requests" description="No pending requests." to={`${base}/leave`} action="View leave" />,
+  }, {
+    id:'holidays', quiet:!holidays.length,
+    content:holidays.length ? <Card title="Upcoming Holidays" action={viewAll('holidays', 'Open calendar')}>
+      <div className="list-stack">{holidays.slice(0,3).map(holiday => <div className="holiday-summary" key={holiday.id}>
+        <div className="date-tile"><span>{formatDate(holiday.date, {month:'short',day:undefined,year:undefined})}</span><strong>{Number(holiday.date.slice(-2))}</strong></div>
+        <div><strong>{holiday.name}</strong><small>{formatDate(holiday.date, {weekday:'long'})}</small></div>
+      </div>)}</div>
+    </Card> : <CompactState title="Upcoming Holidays" description="No upcoming holidays." to={`${base}/holidays`} action="Open calendar" />,
+  }, {
+    id:'complaints', quiet:true,
+    content:<CompactState title="Private Complaints" description={`${complaints.length} unresolved · Private to you and the CEO`} to={`${base}/complaints`} action="View complaints" />,
+  });
+  return <div className="studio-dashboard"><StudioIntro title={ceo ? 'Company Overview' : 'My Overview'}
+    actions={ceo ? <Link className="button primary" to={`${base}/employees`}>View team<ArrowRight size={16} aria-hidden="true" /></Link> : undefined}
+    meta={<div className="workday-strip"><span><CalendarDays size={16} aria-hidden="true" /><time dateTime={today}>{formatDate(today, {weekday:'long'})}</time></span><span>{data.settings.timezone}</span><span>Fictional preview</span></div>} />
     {!ceo && <AttendanceClockControl history />}
-    <div className="stats-grid">
-      <Stat title={ceo ? 'Total Employees' : 'My Active Tasks'} value={ceo ? active.length : unfinished.length} caption={ceo ? 'Active team members' : 'Assigned to you'} icon={ceo ? <Users size={19} /> : <ListTodo size={19} />} to={`${base}/${ceo ? 'employees' : 'tasks'}`} />
-      <Stat title={ceo ? 'Present Today' : 'Attendance Today'} value={ceo ? todayRecords.length : presentToday ? 'Present' : current ? 'Needs review' : 'Not yet'} caption={ceo ? `${data.attendance.filter(a => !a.checkOut).length} currently clocked in` : `Company timezone: ${data.settings.timezone}`} icon={<Clock3 size={19} />} to={`${base}/attendance`} />
-      <Stat title="Pending Leave" value={pending.length} caption={ceo ? `${onLeave.length} on approved leave today` : 'Waiting for CEO review'} icon={<CalendarCheck2 size={19} />} to={`${base}/leave`} />
-      <Stat title={ceo ? 'Overdue Tasks' : 'Open Complaints'} value={ceo ? overdue.length : complaints.length} caption={ceo ? 'A little attention needed' : 'Private to you and the CEO'} icon={ceo ? <ListTodo size={19} /> : <MessageSquareText size={19} />} to={`${base}/${ceo ? 'tasks' : 'complaints'}`} />
-    </div>
-    <div className="dashboard-section-heading"><span className="eyebrow">Overview</span></div>
-    <div className="dashboard-columns">
-      <div className="stack">
-        {ceo ? <Card title="Today’s Attendance" action={<Link className="text-link" to={`${base}/attendance`}>View all <ArrowRight size={14} /></Link>}>
-          {todayRecords.length ? <Table headings={['Employee', 'Clock in', 'Attendance']}>{todayRecords.slice(0, 5).map(record => {
-            const employee = data.employees.find(e => e.id === record.employeeId)!;
-            return <tr key={record.id}><td><Person name={employee.name} secondary={employee.department} /></td><td>{formatTime(record.checkIn, data.settings.timezone)}</td><td><Badge>Present</Badge></td></tr>;
-          })}</Table> : <Empty title="No check-ins today" description="Check-ins will appear as employees start their day." />}
-        </Card> : <Card title="Your Next Tasks" action={<Link className="text-link" to={`${base}/tasks`}>View all <ArrowRight size={14} /></Link>}>
-          {unfinished.length ? <div className="list-stack">{unfinished.slice(0, 5).map(task => <Link className="task-summary" to={`${base}/tasks/${task.id}`} key={task.id}><span className="task-check"><ListTodo size={17} /></span><div><strong>{task.title}</strong><small>{task.dueDate ? `Due ${formatDate(task.dueDate)}` : 'No due date'}</small></div><Badge>{task.status}</Badge></Link>)}</div> : <Empty title="All caught up" description="No unfinished tasks are assigned to you." />}
-        </Card>}
-        <Card title={ceo ? 'Team Task Progress' : 'My Task Progress'}><div className="progress-summary"><strong>{taskCompleted}<span> / {taskTotal} completed</span></strong><CheckCircle2 size={22} /></div>
-          <div className="progress-track"><div style={{ width: `${taskTotal ? taskCompleted / taskTotal * 100 : 0}%` }} /></div>
-          <div className="progress-legend">{['To do', 'In progress', 'Done'].map(status => <span key={status}><Badge>{status}</Badge><strong>{data.tasks.filter(t => t.status === status).length}</strong></span>)}</div>
-        </Card>
-      </div>
-      <div className="stack">
-        <Card title={ceo ? 'Requests to Review' : 'My Leave Requests'} action={<Link className="text-link" to={`${base}/leave`}>View all</Link>}>
-          {pending.length ? <div className="list-stack">{pending.slice(0, 3).map(request => <Link className="request-summary" to={`${base}/leave/${request.id}`} key={request.id}><Person name={data.employees.find(e => e.id === request.employeeId)?.name ?? 'Employee'} secondary={`${request.type} leave · ${request.days.length} day${request.days.length === 1 ? '' : 's'}`} /><div><small>{formatDate(request.startDate, { year: undefined })}</small><Badge>{request.status}</Badge></div></Link>)}</div> : <Empty title="No pending requests" description="You are all caught up here." />}
-        </Card>
-        <Card title="Upcoming Holidays" action={<CalendarDays size={18} />}>{holidays.length ? <div className="list-stack">{holidays.slice(0, 3).map(holiday => <div className="holiday-summary" key={holiday.id}><div className="date-tile"><span>{formatDate(holiday.date, { month: 'short', day: undefined, year: undefined })}</span><strong>{Number(holiday.date.slice(-2))}</strong></div><div><strong>{holiday.name}</strong><small>{formatDate(holiday.date, { weekday: 'long' })}</small></div></div>)}</div> : <Empty title="No upcoming holidays" />}<Link className="text-link section-link" to={`${base}/holidays`}>Open calendar <ArrowRight size={15} /></Link></Card>
-        <div className="note-card"><MessageSquareText size={21} /><div><strong>{ceo ? `${complaints.length} open complaint${complaints.length === 1 ? '' : 's'}` : 'A private place to speak up'}</strong><p>{ceo ? 'Private threads stay inside the complaints module.' : 'Your complaints are visible only to you and the CEO in the intended application.'}</p><Link className="text-link" to={`${base}/complaints`}>View complaints <ArrowRight size={14} /></Link></div></div>
-      </div>
-    </div>
+    {ceo && <div className="stats-grid live-dashboard-stats">
+      <Stat title="Active Employees" value={active.length} caption="Active team members" icon={<Users size={20} />} to={`${base}/employees`} />
+      <Stat title="Present Today" value={todayRecords.length} caption="Recorded check-ins today" icon={<Clock3 size={20} />} to={`${base}/attendance`} />
+      <Stat title="Open Tasks" value={unfinished.length} caption="Unfinished team tasks" icon={<ListTodo size={20} />} to={`${base}/tasks`} />
+    </div>}
+    <DashboardSections sections={sections} />
   </div>;
 }
